@@ -30,14 +30,14 @@ app.secret_key = "your_super_secret_key"
 import google.generativeai as genai
 
 # Your provided API Key
-API_KEY = "AIzaSyDxHqS-frS1m7vlV7DJgkcU1m-fNm2ET_4"
+API_KEY = "AIzaSyBYcvnmdxi1f8LuywK0cORF8tbxRy1_e3E"
 
 model_gemini = None
 
 def initialize_gemini():
     global model_gemini
     try:
-        api_key = os.environ.get("AIzaSyDxHqS-frS1m7vlV7DJgkcU1m-fNm2ET_4", API_KEY)
+        api_key = os.environ.get("AIzaSyBYcvnmdxi1f8LuywK0cORF8tbxRy1_e3E", API_KEY)
         if api_key:
             genai.configure(api_key=api_key)
             
