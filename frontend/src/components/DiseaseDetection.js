@@ -1,153 +1,240 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
 
 const DiseaseDetection = () => {
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [preview, setPreview] = useState(null);
-    const [result, setResult] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setSelectedFile(file);
-            setPreview(URL.createObjectURL(file));
-            setResult(null);
-            setError(null);
+  // Handle file upload
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setPreview(URL.createObjectURL(file));
+      setResult(null);
+      setError(null);
+    }
+  };
+
+  // Detect disease
+  const handleDetect = async () => {
+    if (!selectedFile) {
+      alert("Please upload an image first.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/detect_disease",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
         }
-    };
+      );
 
-    const handleDetect = async () => {
-        if (!selectedFile) {
-            alert("Please upload an image first.");
-            return;
-        }
+      setResult(response.data);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to analyze image. Make sure backend is running.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        const formData = new FormData();
-        formData.append('file', selectedFile);
+  // Safe healthy check
+  const isHealthy =
+    result?.disease?.toLowerCase().includes("healthy") || false;
 
-        setLoading(true);
-        setError(null);
+  // Convert confidence string "92.34%" to number
+  const confidenceValue = result?.confidence
+    ? parseFloat(result.confidence)
+    : 0;
 
-        try {
-            // Connects to your Flask Backend
-            const response = await axios.post('http://localhost:5000/api/detect_disease', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-                withCredentials: true // Important for session handling if needed
-            });
+  return (
+    <div
+      style={{
+        padding: "20px",
+        maxWidth: "850px",
+        margin: "0 auto",
+        fontFamily: "Segoe UI, sans-serif",
+      }}
+    >
+      {/* Header */}
+      <div style={{ textAlign: "center", marginBottom: "30px" }}>
+        <h2 style={{ color: "#12191d" }}>
+          🌿 Pandam - AI Plant Disease Detection
+        </h2>
+        <p style={{ color: "#020649" }}>
+          Upload a leaf image to get instant diagnosis & treatment advice.
+        </p>
+      </div>
 
-            setResult(response.data);
-        } catch (err) {
-            console.error("Error detecting disease:", err);
-            setError("Failed to analyze image. Check if backend is running.");
-        } finally {
-            setLoading(false);
-        }
-    };
+      {/* Upload Box */}
+      <div
+        style={{
+          border: "3px dashed #cbd5e1",
+          borderRadius: "15px",
+          padding: "40px",
+          textAlign: "center",
+          backgroundColor: "#f8fafc",
+          marginBottom: "20px",
+        }}
+      >
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          style={{ display: "none" }}
+          id="upload"
+        />
 
-    return (
-        <div className="container" style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-            <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-                <h2 style={{ color: '#2d3748' }}>🌱Plant Disease Detection</h2>
-                <p style={{ color: '#718096' }}>Upload a leaf photo to get an instant diagnosis and treatment plan.</p>
-            </div>
+        <label htmlFor="upload" style={{ cursor: "pointer" }}>
+          {preview ? (
+            <img
+              src={preview}
+              alt="preview"
+              style={{
+                maxHeight: "300px",
+                maxWidth: "100%",
+                borderRadius: "10px",
+                boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+              }}
+            />
+          ) : (
+            <>
+              <div style={{ fontSize: "50px", marginBottom: "10px" }}>
+                📁
+              </div>
+              <p style={{ color: "#475569" }}>
+                Click to Upload Leaf Image (JPG/PNG)
+              </p>
+            </>
+          )}
+        </label>
+      </div>
 
-            {/* Upload Area */}
-            <div style={{ 
-                border: '3px dashed #cbd5e0', 
-                borderRadius: '15px', 
-                padding: '40px', 
-                textAlign: 'center',
-                backgroundColor: '#f7fafc',
-                marginBottom: '20px'
-            }}>
-                <input 
-                    type="file" 
-                    accept="image/*" 
-                    onChange={handleFileChange} 
-                    style={{ display: 'none' }} 
-                    id="leaf-upload"
-                />
-                <label htmlFor="leaf-upload" style={{ cursor: 'pointer', display: 'block' }}>
-                    {preview ? (
-                        <img 
-                            src={preview} 
-                            alt="Preview" 
-                            style={{ maxHeight: '300px', maxWidth: '100%', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }} 
-                        />
-                    ) : (
-                        <div>
-                            <i className="fas fa-cloud-upload-alt" style={{ fontSize: '48px', color: '#48bb78', marginBottom: '10px' }}></i>
-                            <h4 style={{ color: '#4a5568' }}>Click to Upload Image</h4>
-                            <p style={{ color: '#a0aec0' }}>Supports JPG, PNG</p>
-                        </div>
-                    )}
-                </label>
-            </div>
+      {/* Detect Button */}
+      <div style={{ textAlign: "center" }}>
+        <button
+          onClick={handleDetect}
+          disabled={loading || !selectedFile}
+          style={{
+            padding: "12px 45px",
+            fontSize: "18px",
+            backgroundColor: loading ? "#94a3b8" : "#22c55e",
+            color: "white",
+            border: "none",
+            borderRadius: "30px",
+            cursor: loading ? "not-allowed" : "pointer",
+            fontWeight: "bold",
+            boxShadow: "0 5px 15px rgba(34,197,94,0.4)",
+          }}
+        >
+          {loading ? "Analyzing..." : "Detect Disease"}
+        </button>
+      </div>
 
-            {/* Action Button */}
-            <div style={{ textAlign: 'center' }}>
-                <button 
-                    onClick={handleDetect} 
-                    disabled={loading || !selectedFile}
-                    style={{
-                        padding: '12px 40px',
-                        fontSize: '18px',
-                        backgroundColor: loading ? '#cbd5e0' : '#48bb78',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '30px',
-                        cursor: loading ? 'not-allowed' : 'pointer',
-                        transition: 'background 0.3s'
-                    }}
-                >
-                    {loading ? "Analyzing..." : "Detect Disease"}
-                </button>
-            </div>
-
-            {/* Error Message */}
-            {error && (
-                <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#fff5f5', color: '#c53030', borderRadius: '8px', textAlign: 'center' }}>
-                    {error}
-                </div>
-            )}
-
-            {/* Results Display */}
-            {result && (
-                <div style={{ 
-                    marginTop: '30px', 
-                    padding: '25px', 
-                    borderRadius: '12px', 
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                    backgroundColor: 'white',
-                    borderLeft: result.status === 'Healthy' ? '6px solid #48bb78' : '6px solid #e53e3e'
-                }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                        <h3 style={{ margin: 0, color: result.status === 'Healthy' ? '#2f855a' : '#c53030' }}>
-                            {result.status}
-                        </h3>
-                        <span style={{ backgroundColor: '#edf2f7', padding: '5px 12px', borderRadius: '20px', fontSize: '0.9em', fontWeight: 'bold', color: '#4a5568' }}>
-                            Confidence: {result.confidence}
-                        </span>
-                    </div>
-
-                    <h4 style={{ color: '#2d3748', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
-                        Identified: {result.disease}
-                    </h4>
-
-                    <div style={{ marginTop: '15px', backgroundColor: '#ebf8ff', padding: '15px', borderRadius: '8px' }}>
-                        <strong style={{ color: '#2b6cb0', display: 'block', marginBottom: '5px' }}>
-                            <i className="fas fa-user-md"></i> Expert Advice:
-                        </strong>
-                        <p style={{ margin: 0, color: '#2c5282' }}>{result.advice}</p>
-                    </div>
-                </div>
-            )}
+      {/* Error */}
+      {error && (
+        <div
+          style={{
+            marginTop: "20px",
+            padding: "15px",
+            backgroundColor: "#fee2e2",
+            color: "#b91c1c",
+            borderRadius: "8px",
+            textAlign: "center",
+          }}
+        >
+          {error}
         </div>
-    );
+      )}
+
+      {/* Results */}
+      {result && (
+        <div
+          style={{
+            marginTop: "30px",
+            padding: "25px",
+            borderRadius: "15px",
+            backgroundColor: "#ffffff",
+            boxShadow: "0 10px 20px rgba(0,0,0,0.08)",
+            borderLeft: isHealthy
+              ? "8px solid #22c55e"
+              : "8px solid #ef4444",
+          }}
+        >
+          <h3
+            style={{
+              color: isHealthy ? "#15803d" : "#b91c1c",
+              marginBottom: "10px",
+            }}
+          >
+            {isHealthy
+              ? "✅ Plant is Healthy"
+              : "⚠️ Disease Detected"}
+          </h3>
+
+          <h4 style={{ marginBottom: "10px", textTransform: "capitalize" }}>
+            🧪 {result.disease}
+          </h4>
+
+          {/* Confidence Bar */}
+          <div style={{ marginBottom: "15px" }}>
+            <p style={{ marginBottom: "5px" }}>
+              Confidence: {result.confidence}
+            </p>
+            <div
+              style={{
+                height: "10px",
+                backgroundColor: "#e2e8f0",
+                borderRadius: "10px",
+              }}
+            >
+              <div
+                style={{
+                  width: `${confidenceValue}%`,
+                  height: "100%",
+                  backgroundColor: isHealthy
+                    ? "#22c55e"
+                    : "#ef4444",
+                  borderRadius: "10px",
+                  transition: "width 0.5s ease",
+                }}
+              ></div>
+            </div>
+          </div>
+
+          {/* Advice */}
+          <div
+            style={{
+              marginTop: "15px",
+              padding: "15px",
+              backgroundColor: "#eff6ff",
+              borderRadius: "10px",
+            }}
+          >
+            <strong style={{ color: "#1d4ed8" }}>
+              📋 Suggested Treatment:
+            </strong>
+            <p style={{ marginTop: "8px", lineHeight: "1.6" }}>
+              {result.advice || "No advice available."}
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default DiseaseDetection;

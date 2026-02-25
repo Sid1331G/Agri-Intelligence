@@ -1,215 +1,96 @@
 import os
 import io
+import random
+import pickle
 import numpy as np
 import pandas as pd
-import pickle
-import random
+import torch
 from datetime import datetime, timedelta
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
 from PIL import Image
+from torchvision import models, transforms
+import torch.nn as nn
+import google.generativeai as genai
+from transformers import AutoImageProcessor, AutoModelForImageClassification
 
-# --- 1. GOOGLE GEMINI SETUP (SMART SELECTOR) ---
+# ===============================
+# 1️⃣ FLASK APP SETUP
+# ===============================
+app = Flask(__name__)
+CORS(app, supports_credentials=True,
+     origins=["http://localhost:5173", "http://localhost:3000"])
+app.secret_key = "your_super_secret_key"
+
+# ===============================
+# 2️⃣ GEMINI AI SETUP
+# ===============================
 import google.generativeai as genai
 
-# ⚠️ PASTE YOUR GOOGLE API KEY HERE
-# Get one free at: https://aistudio.google.com/app/apikey
-os.environ["API_KEY"] = "AIzaSyBAZDElUPocXqpggHt80jDfkbNSrLcBn2A"
+# Your provided API Key
+API_KEY = "AIzaSyDxHqS-frS1m7vlV7DJgkcU1m-fNm2ET_4"
 
-# Global model variable
-model = None
+model_gemini = None
 
 def initialize_gemini():
-    global model
-    api_key = os.environ.get("API_KEY")
-    
-    if not api_key or "PASTE_YOUR" in api_key:
-        print("⚠️  API Key not set. Chat will be in Offline Mode.")
-        return
-
+    global model_gemini
     try:
-        genai.configure(api_key=api_key)
-        
-        # 1. Ask Google for available models
-        print("🔍 Searching for available Gemini models...")
-        available_models = []
-        for m in genai.list_models():
-            if 'generateContent' in m.supported_generation_methods:
-                available_models.append(m.name)
-                
-        # 2. Smart Selection Logic
-        selected_model_name = None
-        if not available_models:
-            print("❌ No models found. Your API Key might be invalid or has no access.")
-            return
-
-        # Preference list: fast/free models first
-        preferences = ["models/gemini-1.5-flash", "models/gemini-pro", "models/gemini-1.0-pro"]
-        
-        for pref in preferences:
-            if pref in available_models:
-                selected_model_name = pref
-                break
-        
-        # Fallback: If preferred ones aren't found, take the first available one
-        if not selected_model_name:
-            selected_model_name = available_models[0]
-
-        print(f"✅ Gemini Initialized. Using model: {selected_model_name}")
-        model = genai.GenerativeModel(selected_model_name)
-
+        api_key = os.environ.get("AIzaSyDxHqS-frS1m7vlV7DJgkcU1m-fNm2ET_4", API_KEY)
+        if api_key:
+            genai.configure(api_key=api_key)
+            
+            # FIX: Use 'gemini-flash-latest' directly to avoid the 404
+            model_name = "gemini-flash-latest" 
+            model_gemini = genai.GenerativeModel(model_name)
+            
+            # Simple test to confirm it's active
+            model_gemini.generate_content("test")
+            print(f"✅ Gemini Initialized successfully using {model_name}")
+        else:
+            print("⚠️ Gemini API key missing")
     except Exception as e:
-        print(f"⚠️ Google Client failed to start: {e}")
+        print(f"❌ Gemini Init Error: {e}")
+        model_gemini = None
 
-# Run initialization
 initialize_gemini()
 
-# Define the Persona
-SYSTEM_INSTRUCTION = """
-You are an expert AI Chart & Commodity Assistant. 
-Your goal is to provide accurate, data-driven answers about prices and trends.
-1. If the user asks for data, format it clearly using bullet points or tables.
-2. Keep answers concise and professional.
-"""
-
-# --- 2. PYTORCH SETUP ---
-try:
-    import torch
-    import torch.nn as nn
-    from torchvision import models, transforms
-    PYTORCH_AVAILABLE = True
-    print(f"✅ PyTorch version {torch.__version__} detected.")
-except ImportError:
-    PYTORCH_AVAILABLE = False
-    print("⚠️ PyTorch not found. Disease detection will run in SIMULATION mode.")
-
-# --- 3. DASH IMPORTS ---
-import dash
-from dash import dcc, html, Input, Output
-import dash_bootstrap_components as dbc
-import plotly.express as px
-
-# --- 4. APP SETUP ---
-app = Flask(__name__)
-# Enable CORS for React Frontend
-CORS(app, supports_credentials=True, origins=["http://localhost:5173", "http://localhost:3000"])
-app.secret_key = 'your_super_secret_key'
-
-# --- 5. MONGODB CONNECTION ---
+# ===============================
+# 3️⃣ MONGODB CONNECTION
+# ===============================
 try:
     client_mongo = MongoClient("mongodb+srv://aravindans2004:Aravindans2004@userauth.joa6bii.mongodb.net/")
-    db = client_mongo['market_data']
     db1 = client_mongo['auth_db']
     users_collection = db1['users']
-    print("✅ Connected to MongoDB.")
+    print("✅ MongoDB Connected")
 except Exception as e:
-    print(f"❌ MongoDB Connection Error: {e}")
+    print(f"❌ MongoDB Error: {e}")
 
-# --- 6. LOAD MODELS ---
-# A) Price Prediction
+# ===============================
+# 4️⃣ PRICE PREDICTION MODEL
+# ===============================
 price_model = None
 column_order = []
-try:
-    xgboost_path = os.path.join("models", "xgboost_model.pkl")
-    columns_path = os.path.join("models", "column_order.pkl")
-    if os.path.exists(xgboost_path) and os.path.exists(columns_path):
-        with open(xgboost_path, "rb") as f:
-            price_model = pickle.load(f)
-        with open(columns_path, "rb") as f:
-            column_order = pickle.load(f)
-        print("✅ Price Prediction Model Loaded.")
-    else:
-        print("⚠️ Price model files not found.")
-except Exception as e:
-    print(f"❌ Error loading pickle files: {e}")
 
-# B) Disease Detection
-disease_model = None
+def load_price_model():
+    global price_model, column_order
+    try:
+        xgboost_path = os.path.join("models", "xgboost_model.pkl")
+        columns_path = os.path.join("models", "column_order.pkl")
 
-if PYTORCH_AVAILABLE:
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-else:
-    device = "cpu"
+        if os.path.exists(xgboost_path) and os.path.exists(columns_path):
+            with open(xgboost_path, "rb") as f:
+                price_model = pickle.load(f)
+            with open(columns_path, "rb") as f:
+                column_order = pickle.load(f)
+            print("✅ XGBoost Price Model Loaded")
+        else:
+            print("⚠️ Price model files not found")
+    except Exception as e:
+        print(f"❌ Price Model Error: {e}")
 
-PLANT_CLASSES = [
-    'Apple___Apple_scab', 'Apple___Black_rot', 'Apple___Cedar_apple_rust', 'Apple___healthy',
-    'Blueberry___healthy', 'Cherry_(including_sour)___Powdery_mildew', 'Cherry_(including_sour)___healthy',
-    'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot', 'Corn_(maize)___Common_rust_', 
-    'Corn_(maize)___Northern_Leaf_Blight', 'Corn_(maize)___healthy', 'Grape___Black_rot', 
-    'Grape___Esca_(Black_Measles)', 'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)', 'Grape___healthy',
-    'Orange___Haunglongbing_(Citrus_greening)', 'Peach___Bacterial_spot', 'Peach___healthy',
-    'Pepper,_bell___Bacterial_spot', 'Pepper,_bell___healthy', 'Potato___Early_blight',
-    'Potato___Late_blight', 'Potato___healthy', 'Raspberry___healthy', 'Soybean___healthy',
-    'Squash___Powdery_mildew', 'Strawberry___Leaf_scorch', 'Strawberry___healthy',
-    'Tomato___Bacterial_spot', 'Tomato___Early_blight', 'Tomato___Late_blight', 'Tomato___Leaf_Mold',
-    'Tomato___Septoria_leaf_spot', 'Tomato___Spider_mites Two-spotted_spider_mite',
-    'Tomato___Target_Spot', 'Tomato___Tomato_Yellow_Leaf_Curl_Virus', 'Tomato___Tomato_mosaic_virus',
-    'Tomato___healthy'
-]
-TREATMENT_ADVICE = {
-     'Apple_scab': "Rake and destroy fallen leaves. Apply fungicides like Captan.",
-    'Black_rot': "Prune infected branches. Remove mummified fruit.",
-    'Cedar_apple_rust': "Remove nearby juniper galls. Apply fungicides in spring.",
-    'Powdery_mildew': "Apply Neem oil or Sulfur. Improve air circulation.",
-    'Cercospora_leaf_spot': "Rotate crops. Use resistant hybrids. Apply fungicide.",
-    'Common_rust': "Plant resistant varieties. Fungicides generally not needed.",
-    'Northern_Leaf_Blight': "Rotate crops. Manage residue. Use resistant corn.",
-    'Esca_(Black_Measles)': "Prune out infected wood. Protect pruning wounds.",
-    'Leaf_blight': "Apply fungicides. Improve air circulation by pruning.",
-    'Haunglongbing_(Citrus_greening)': "Remove infected trees immediately (no cure). Control psyllids.",
-    'Bacterial_spot': "Use copper sprays. Avoid overhead watering.",
-    'Early_blight': "Mulch soil. Remove lower leaves. Apply Chlorothalonil.",
-    'Late_blight': "URGENT: Remove infected plants immediately. Apply Copper fungicide.",
-    'Leaf_Mold': "Reduce humidity. Improve ventilation.",
-    'Septoria_leaf_spot': "Remove lower leaves. Keep leaves dry.",
-    'Spider_mites': "Apply Neem oil or insecticidal soap.",
-    'Target_Spot': "Remove infected leaves. Apply fungicide.",
-    'Tomato_Yellow_Leaf_Curl_Virus': "Control whiteflies. Remove infected plants.",
-    'Tomato_mosaic_virus': "Disinfect tools. Wash hands. Remove infected plants.",
-    'Leaf_scorch': "Remove infected leaves. Water properly.",
-    'healthy': "Plant looks healthy! Continue regular care."
-}
-
-def load_pytorch_model():
-    global disease_model
-    if not PYTORCH_AVAILABLE: return
-    pth_path = os.path.join("models", "plantDisease-resnet34.pth")
-    if os.path.exists(pth_path):
-        try:
-            disease_model = models.resnet34(pretrained=False)
-            num_ftrs = disease_model.fc.in_features
-            disease_model.fc = nn.Linear(num_ftrs, len(PLANT_CLASSES))
-            disease_model.load_state_dict(torch.load(pth_path, map_location=device))
-            disease_model = disease_model.to(device)
-            disease_model.eval()
-            print("✅ PyTorch Disease Model Loaded.")
-        except Exception as e:
-            print(f"❌ Error loading .pth file: {e}")
-
-load_pytorch_model()
-if PYTORCH_AVAILABLE:
-    data_transform = transforms.Compose([
-        transforms.Resize((224, 224)),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    ])
-
-# C) Historical Data
-try:
-    df_hist = pd.read_csv(r'filtered_apr2024_to_2025.csv')
-    df_hist['Arrival_Date'] = pd.to_datetime(df_hist['Arrival_Date'])
-except Exception:
-    df_hist = pd.DataFrame(columns=['Commodity', 'District', 'Arrival_Date', 'Modal_Price'])
-
-# --- 7. HELPER FUNCTIONS ---
-def get_advice(disease_name):
-    clean_name = disease_name.split('___')[-1].replace('_', ' ')
-    for key in TREATMENT_ADVICE:
-        if key.lower() in clean_name.lower():
-            return TREATMENT_ADVICE[key]
-    return "Consult a local agricultural expert."
+load_price_model()
 
 COMMODITY_PRICE_RANGES = {
     'Tomato': {"min": (1000, 1500), "max": (1500, 2000)},
@@ -220,7 +101,9 @@ COMMODITY_PRICE_RANGES = {
 def generate_weekly_predictions(commodity_name, num_weeks=5):
     predictions = []
     start_date = datetime.today()
-    ranges = COMMODITY_PRICE_RANGES.get(commodity_name, {"min": (1000, 2000), "max": (2000, 3000)})
+    ranges = COMMODITY_PRICE_RANGES.get(
+        commodity_name, {"min": (1000, 2000), "max": (2000, 3000)})
+
     for i in range(num_weeks):
         future_date = start_date + timedelta(weeks=i)
         predictions.append({
@@ -231,80 +114,118 @@ def generate_weekly_predictions(commodity_name, num_weeks=5):
         })
     return predictions
 
-# --- 8. API ROUTES ---
+# ===============================
+# 5️⃣ DISEASE DETECTION MODEL
+# ===============================
+MODEL_NAME = "linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification"
+BASE_PROCESSOR = "google/mobilenet_v2_1.0_224"
 
-@app.route('/api/detect_disease', methods=['POST'])
-def detect_disease():
-    if 'file' not in request.files: return jsonify({"error": "No file"}), 400
+processor = None
+disease_model = None
+
+def load_disease_model():
+    global processor, disease_model
     try:
-        if disease_model and PYTORCH_AVAILABLE:
-            file = request.files['file']
-            img = Image.open(io.BytesIO(file.read())).convert('RGB')
-            img_tensor = data_transform(img).unsqueeze(0).to(device)
-            with torch.no_grad():
-                outputs = disease_model(img_tensor)
-                _, idx = torch.max(outputs, 1)
-                disease_name = PLANT_CLASSES[idx.item()] if idx.item() < len(PLANT_CLASSES) else "Unknown"
-            return jsonify({"status": "Analyzed", "disease": disease_name, "advice": get_advice(disease_name)})
-        else:
-            return jsonify({"status": "Simulated", "disease": "Healthy", "advice": "No model loaded."})
+        processor = AutoImageProcessor.from_pretrained(BASE_PROCESSOR)
+        disease_model = AutoModelForImageClassification.from_pretrained(MODEL_NAME)
+        disease_model.eval()
+        print("✅ Plant Disease Model Loaded Successfully")
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print(f"❌ Disease Model Load Error: {e}")
+
+load_disease_model()
+
+def predict_disease(image_bytes):
+    if processor is None or disease_model is None:
+        return "Model not loaded", 0.0
+    image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    inputs = processor(images=image, return_tensors="pt")
+    with torch.no_grad():
+        outputs = disease_model(**inputs)
+        scores = torch.softmax(outputs.logits, dim=-1)[0]
+    confidence, idx = scores.max(0)
+    label = disease_model.config.id2label[idx.item()]
+    return label, float(confidence.item())
+
+def get_treatment_advice(label):
+    label_lower = label.lower()
+    if "healthy" in label_lower:
+        return "The plant appears healthy. Maintain proper watering and sunlight."
+    elif "blight" in label_lower:
+        return "Use copper-based fungicide and remove infected leaves."
+    elif "mosaic" in label_lower:
+        return "Control aphids and remove infected plants immediately."
+    elif "rust" in label_lower:
+        return "Improve air circulation and apply sulfur-based fungicides."
+    elif "scab" in label_lower:
+        return "Prune infected branches and apply fungicides during budding."
+    else:
+        return "Consult an agricultural officer for tailored treatment."
+
+# ===============================
+# 6️⃣ API ROUTES
+# ===============================
 
 @app.route('/api/predict', methods=['POST'])
-def predict():
-    return jsonify({"weekly_predictions": generate_weekly_predictions(request.json.get("variety"))})
-
-@app.route('/api/signup', methods=['POST'])
-def signup():
-    return jsonify({"message": "User registered"}), 201
-
-@app.route('/api/login', methods=['POST'])
-def login():
-    return jsonify({"message": "Login successful", "username": request.json.get('username')}), 200
-
-# --- 9. SMART CHAT ASSISTANT (Updated) ---
+def predict_price():
+    variety = request.json.get("variety", "Tomato")
+    return jsonify({"weekly_predictions": generate_weekly_predictions(variety)})
 
 @app.route('/api/chat', methods=['POST'])
 def chat_assistant():
-    # 1. Offline Check
-    if not model:
-        # Try to initialize one more time if it failed earlier
-        initialize_gemini()
-        if not model:
-            return jsonify({
-                "reply": "I am in Offline Mode. Please check your Gemini API Key in app.py."
-            })
-
+    if not model_gemini:
+        return jsonify({"reply": "AI Assistant is currently offline."}), 503
+    
     try:
         data = request.json
-        user_msg = data.get('message', '')
-        history = data.get('history', [])
+        user_message = data.get('message')
 
-        # 2. Construct Prompt with History
-        # We manually build the context string to be robust across different model versions
-        context_str = ""
-        if history:
-            for h in history:
-                role = "User" if h['role'] == 'user' else "Assistant"
-                context_str += f"{role}: {h['content']}\n"
+        # This context defines the bot's behavior for your Agri-Horticultural project
+        system_context = (
+            "You are Pandam AI, a specialized assistant for the Agri-Horticultural sector. "
+            "You provide insights on crop price trends, disease prevention (like Blight or Rust), "
+            "and modern farming techniques like Hydroponics. Keep answers helpful and concise."
+        )
+
+        # Generate response using the verified 'gemini-flash-latest' model
+        response = model_gemini.generate_content(f"{system_context}\n\nUser: {user_message}")
         
-        full_prompt = f"{SYSTEM_INSTRUCTION}\n\nPREVIOUS CONVERSATION:\n{context_str}\n\nCURRENT QUESTION: {user_msg}"
-
-        # 3. Generate content
-        response = model.generate_content(full_prompt)
-        
-        return jsonify({"reply": response.text})
-
+        return jsonify({
+            "reply": response.text,
+            "status": "success"
+        })
     except Exception as e:
-        print(f"❌ Gemini Error: {e}")
-        return jsonify({"reply": "I encountered an error connecting to Google Gemini. Please check the backend logs."})
+        print(f"❌ Chat Error: {e}")
+        # If you hit a 429 quota error here, the user gets a friendly message
+        return jsonify({"reply": "I'm a bit busy right now. Please try again in a minute."}), 500
 
+@app.route('/api/detect_disease', methods=['POST'])
+def detect_disease():
+    if not disease_model:
+        return jsonify({"error": "Disease model not loaded"}), 500
+    if "file" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
 
+    file = request.files["file"]
+    img_bytes = file.read()
+    label, confidence = predict_disease(img_bytes)
+    advice = get_treatment_advice(label)
 
+    return jsonify({
+        "status": "success",
+        "disease": label,
+        "confidence": f"{confidence*100:.2f}%",
+        "advice": advice
+    })
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    return jsonify({"message": "Login successful"}), 200
+
+# ===============================
+# 7️⃣ SERVER START
+# ===============================
 if __name__ == "__main__":
     from waitress import serve
-    print("✅ Server running on http://0.0.0.0:5000")
-
-    serve(app, host='0.0.0.0', port=5000, threads=6)
-
+    print("🚀 Pandam Backend Running on Port 5000")
+    serve(app, host="0.0.0.0", port=5000, threads=6)
