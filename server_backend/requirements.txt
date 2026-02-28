@@ -1,0 +1,15 @@
+Flask
+flask-cors
+pymongo
+werkzeug
+plotly
+pandas
+numpy
+scikit-learn
+xgboost
+requests
+torch
+torchvision
+transformers
+google-genai
+python-dotenv
