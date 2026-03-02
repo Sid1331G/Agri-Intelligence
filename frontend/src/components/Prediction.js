@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
-
-const Prediction = () => {
+const PredictionComponent = () => {
     const [category, setCategory] = useState('');
     const [variety, setVariety] = useState('');
     const [predictions, setPredictions] = useState([]);
-    const [chartData, setChartData] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    // EXACT KEYS matching backend/app.py COMMODITY_PRICE_RANGES
+    // EXACT KEYS matching your backend/app.py COMMODITY_PRICE_RANGES
     const varieties = {
         pulses: [
             "Arhar (Tur/Red Gram)(Whole)",
@@ -32,8 +28,8 @@ const Prediction = () => {
             "Bottle Gourd",
             "Brinjal",
             "Cabbage",
-            "Capsicum",
             "Carrot",
+            "Capsicum",
             "Cluster Beans",
             "Coriander (Leaves)",
             "Cauliflower",
@@ -49,110 +45,128 @@ const Prediction = () => {
         ]
     };
 
-    const handlePredict = async () => {
-        if (!category || !variety) {
-            alert("Please select both category and variety");
-            return;
-        }
+    const getPrediction = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
 
         try {
-            // Updated Path: consistent with backend port
-            const response = await axios.post('http://127.0.0.1:5000/api/predict', {
-                category,
-                variety
+            // Updated URL to match your app.py @app.route('/predict')
+            const response = await fetch('http://localhost:5000/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    category: category,
+                    variety: variety
+                }),
             });
-            
-            const data = response.data.weekly_predictions;
-            setPredictions(data);
 
-            setChartData({
-                labels: data.map(p => p.Date),
-                datasets: [{
-                    label: 'Predicted Modal Price',
-                    data: data.map(p => p.Predicted_Modal_Price),
-                    borderColor: 'rgb(75, 192, 192)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                    fill: true
-                }]
-            });
-        } catch (error) {
-            console.error("Prediction Error:", error);
-            alert(error.response?.data?.error || "Error fetching prediction");
+            const data = await response.json();
+
+            if (response.ok) {
+                // Accesses the 'weekly_predictions' array from your Flask response
+                setPredictions(data.weekly_predictions);
+            } else {
+                setError(data.error || "Failed to fetch data");
+            }
+        } catch (err) {
+            setError("Server connection failed. Check if app.py is running.");
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div id="prediction" className="tab-content active" style={{display: 'block'}}>
-            <div className="header-image-container">
-                {/* Path: frontend/public/static/content/prediction_page.png */}
-                <img 
-                    src="/static/content/prediction_page.png" 
-                    className="header-image" 
-                    style={{ width: '100%', height: 'auto', objectFit: 'cover' }} 
-                    alt="Horticultural Crops" 
-                />
-                
-                <div className="overlay-content">
-                    <h1>Commodity Price Prediction</h1>
+        <div className="prediction-container" style={{ padding: '200px', maxWidth: '1200px', margin: '0 auto' }}>
+            <h2 style={{ textAlign: 'center', color: '#ffffff' }}>Commodity Price Forecast</h2>
+            
+            <form onSubmit={getPrediction} style={{ 
+                display: 'flex', 
+                gap: '15px', 
+                justifyContent: 'center', 
+                marginBottom: '50px',
+                flexWrap: 'wrap' 
+            }}>
+                {/* Category Selection */}
+                <select 
+                    value={category} 
+                    onChange={(e) => {
+                        setCategory(e.target.value);
+                        setVariety(''); // Reset variety when category changes
+                    }}
+                    required
+                    style={{ padding: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
+                >
+                    <option value="">Select Category</option>
+                    <option value="pulses">Pulses</option>
+                    <option value="vegetables">Vegetables</option>
+                </select>
 
-                    <div>
-                        <label htmlFor="category">Select Category:</label>
-                        <select id="category" className="form-select" value={category} onChange={(e) => setCategory(e.target.value)}>
-                            <option value="">--Select--</option>
-                            <option value="pulses">Pulses</option>
-                            <option value="vegetables">Vegetables</option>
-                        </select>
+                {/* Dynamic Variety Selection based on Category */}
+                <select 
+                    value={variety} 
+                    onChange={(e) => setVariety(e.target.value)} 
+                    disabled={!category}
+                    required
+                    style={{ padding: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
+                >
+                    <option value="">Select a Variety</option>
+                    {category && varieties[category].map(option => (
+                        <option key={option} value={option}>{option}</option>
+                    ))}
+                </select>
+
+                <button 
+                    type="submit" 
+                    disabled={loading}
+                    style={{ 
+                        padding: '10px 20px', 
+                        backgroundColor: '#27ae60', 
+                        color: 'white', 
+                        border: 'none', 
+                        borderRadius: '5px',
+                        cursor: 'pointer'
+                    }}
+                >
+                    {loading ? "Predicting..." : "Get 5-Week Forecast"}
+                </button>
+            </form>
+
+            {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
+
+            {/* Prediction Cards Grid */}
+            <div className="prediction-results" style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', 
+                gap: '20px' 
+            }}>
+                {predictions.map((item, index) => (
+                    <div key={index} className="prediction-card" style={{
+                        border: '1px solid #ddd',
+                        padding: '20px',
+                        borderRadius: '12px',
+                        backgroundColor: '#fff',
+                        boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                    }}>
+                        <h3 style={{ marginTop: 0, color: '#27ae60' }}>Week {index + 1}</h3>
+                        <p style={{ fontSize: '0.9rem', color: '#666' }}><strong>Date:</strong> {item.Date}</p>
+                        <p style={{ fontSize: '1.1rem', margin: '10px 0' }}>
+                            <strong>Estimated:</strong> ₹{item.Price_Per_kg}/kg
+                        </p>
+                        <p style={{ fontSize: '0.85rem' }}>
+                            <strong>Modal Price:</strong> ₹{item.Predicted_Modal_Price}/quintal
+                        </p>
+                        <hr style={{ border: '0', borderTop: '1px solid #eee' }} />
+                        <small style={{ color: '#888' }}>
+                            Market Range: ₹{item.Min_Price} - ₹{item.Max_Price}
+                        </small>
                     </div>
-
-                    {category && (
-                        <div id="variety-section" style={{ marginTop: '20px' }}>
-                            <label htmlFor="variety">Select Variety:</label>
-                            <select id="variety" className="form-select" value={variety} onChange={(e) => setVariety(e.target.value)}>
-                                <option value="">Select Variety</option>
-                                {varieties[category]?.map(v => (
-                                    <option key={v} value={v}>{v}</option>
-                                ))}
-                            </select>
-                            <button id="getPrediction" onClick={handlePredict} style={{marginLeft: '10px', padding: '5px 15px'}}>Get Prediction</button>
-                        </div>
-                    )}
-
-                    {predictions.length > 0 && (
-                        <div id="predictions" style={{ textAlign: 'left', marginTop: '20px', background: 'rgba(255,255,255,0.95)', padding: '20px', borderRadius: '10px', color: 'black' }}>
-                            <h3>Weekly Predictions:</h3>
-                            
-                            {chartData && (
-                                <div className="chart-container" style={{backgroundColor: 'white', padding: '10px'}}>
-                                    <Line data={chartData} />
-                                </div>
-                            )}
-
-                            <table id="predictionTable" className="table table-striped mt-3">
-                                <thead className="table-success">
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Min Price</th>
-                                        <th>Max Price</th>
-                                        <th>Predicted Modal</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {predictions.map((p, index) => (
-                                        <tr key={index}>
-                                            <td>{p.Date}</td>
-                                            <td>₹{p.Min_Price}</td>
-                                            <td>₹{p.Max_Price}</td>
-                                            <td>₹{p.Predicted_Modal_Price}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                </div>
+                ))}
             </div>
         </div>
     );
 };
 
-export default Prediction;
+export default PredictionComponent;

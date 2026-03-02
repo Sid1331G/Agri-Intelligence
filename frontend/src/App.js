@@ -10,18 +10,8 @@ import Login from './components/Login';
 import DiseaseDetection from './components/DiseaseDetection';
 import ChatAssistant from './components/ChatAssistant';
 
-// Dashboard Proxy Component
-const DashboardProxy = () => {
-    return (
-        <div style={{ width: '100%', height: '100vh', overflow: 'hidden' }}>
-            <iframe 
-                src="http://127.0.0.1:5000/dashboard/" 
-                style={{ width: '100%', height: '100%', border: 'none' }}
-                title="Dashboard"
-            />
-        </div>
-    );
-};
+
+
 
 function App() {
   // Check local storage for existing user on load
@@ -73,7 +63,7 @@ function App() {
           {/* ACCOUNT MENU */}
           <div className="account-menu" style={{ marginLeft: 'auto', position: 'relative' }}>
              <img 
-                src="https://cdn-icons-png.flaticon.com/128/9069/9069049.png" 
+                src="https://cdn-icons-png.flaticon.com/128/9069/9069049.png"
                 alt="Account" 
                 style={{ width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', border: '2px solid white' }}
                 onClick={() => setShowAccountMenu(!showAccountMenu)}
@@ -85,7 +75,7 @@ function App() {
                       {user ? (
                         <>
                             <li style={{ padding: '10px', borderBottom: '1px solid #eee', fontWeight: 'bold', color: '#059669' }}>
-                                Hi, {user}
+                                 {user}
                             </li>
                             <li>
                                <button onClick={handleLogout} style={{ width: '100%', padding: '10px', cursor: 'pointer', background: 'none', border: 'none', textAlign: 'left', color: '#dc3545' }}>
