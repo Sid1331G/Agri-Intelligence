@@ -69,9 +69,7 @@ const Home = () => {
                     <div className="feature-content">
                         <h3>Smart AI Agri-Assistant</h3>
                         <p>Get instant agricultural advice on fertilizer use, irrigation, and farming best practices from our Gemini-powered AI assistant.</p>
-                        <Link to="/chat" className="tab-button blue" style={{ textDecoration: 'none', display: 'inline-block', textAlign: 'center' }}>
-                            Ask Assistant <i className="fas fa-comments"></i>
-                        </Link>
+                       
                     </div>
                 </div>
             </div>

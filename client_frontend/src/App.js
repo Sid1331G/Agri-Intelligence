@@ -10,9 +10,6 @@ import Login from './components/Login';
 import DiseaseDetection from './components/DiseaseDetection';
 import ChatAssistant from './components/ChatAssistant';
 
-
-
-
 function App() {
   // Check local storage for existing user on load
   const [user, setUser] = useState(localStorage.getItem('user') || null);
@@ -53,10 +50,10 @@ function App() {
           <NavLink to="/prediction" className={({ isActive }) => isActive ? "tab-button active" : "tab-button"}>
             <i className="fas fa-chart-bar"></i> Prediction
           </NavLink>
-          <NavLink to="/disease" className={({ isActive }) => isActive ? "tab-button active" : "tab-button"}>
+          {/* Updated NavLink to match the longer URL commonly used in your error log */}
+          <NavLink to="/disease-detection" className={({ isActive }) => isActive ? "tab-button active" : "tab-button"}>
             <i className="fas fa-leaf"></i> Disease Detection
           </NavLink>
-
 
           <h2 style={{ margin: 0, textAlign: 'center', flexGrow: 1, color: 'white' }}>PANDAM VILAI</h2>
 
@@ -100,10 +97,17 @@ function App() {
         <main className="content">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/insight" element={<Insight />} />
-            <Route path="/prediction" element={<Prediction />} />
-            <Route path="/disease" element={<DiseaseDetection />} />
-          
+            
+            {/* Protected Routes: If no user, redirect to login */}
+            <Route path="/insight" element={user ? <Insight /> : <Navigate to="/login" />} />
+            <Route path="/prediction" element={user ? <Prediction /> : <Navigate to="/login" />} />
+            
+            {/* Added both variations to ensure no 404s, both protected */}
+            <Route path="/disease" element={user ? <DiseaseDetection /> : <Navigate to="/login" />} />
+            <Route path="/disease-detection" element={user ? <DiseaseDetection /> : <Navigate to="/login" />} />
+            
+            {/* Added Chat route - protected */}
+            <Route path="/chat" element={user ? <ChatAssistant /> : <Navigate to="/login" />} />
             
             {/* Login Route: Redirects to Home if already logged in */}
             <Route 
@@ -112,8 +116,10 @@ function App() {
             />
           </Routes>
         </main>
-        {/* ADD THE CHAT ASSISTANT HERE */}
-        <ChatAssistant />
+        
+        {/* Keeping ChatAssistant visible globally as per your original design */}
+        {/* Only visible if logged in */}
+        {user && <ChatAssistant />}
       </div>
     </Router>
   );

@@ -5,8 +5,62 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PANDAM VILAI</title>
+
+    <style>
+      /* 1. Professional Positioning */
+      .gtranslate_wrapper {
+        position: fixed !important;
+        top: 15px !important;    
+        right: 75px !important; /* Positions it perfectly next to your circular profile icon */
+        z-index: 10000;
+        transform: scale(0.9); 
+        transform-origin: top right; 
+      }
+
+      /* 2. Professional Dropdown Styling */
+      .gt_selector {
+        background-color: #91e4b6 !important; /* Clean white background */
+        color: #333333 !important;           /* Dark text for readability */
+        border: 2px solid #1ba544fb !important; /* Matches your PANDAM VILAI Green */
+        border-radius: 20px !important;       /* Modern rounded/pill shape */
+        padding: 4px 12px !important;
+        font-family: 'Inter', 'Segoe UI', sans-serif !important;
+        font-weight: 500 !important;
+        outline: none !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+        transition: all 0.3s ease !important;
+      }
+
+      /* 3. Hover Effect */
+      .gt_selector:hover {
+        border-color: #0ef5e9 !important; /* Slightly darker green on hover */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+      }
+
+      /* 4. Hide unnecessary Google branding for a cleaner look */
+      .goog-logo-link, .goog-te-gadget span {
+        display: none !important;
+      }
+      .goog-te-gadget {
+        color: transparent !important;
+        font-size: 0 !important;
+      }
+    </style>
+
+    <script>
+      window.gtranslateSettings = {
+        "default_language": "en",
+        "languages": ["en", "ta", "hi", "te", "kn", "ml"], 
+        "wrapper_selector": ".gtranslate_wrapper",
+        "horizontal_position": "right", /* Changed to right for better alignment */
+        "vertical_position": "top" 
+      }
+    </script>
+    <script src="https://cdn.gtranslate.net/widgets/latest/dropdown.js" defer></script>
   </head>
   <body>
+    <div class="gtranslate_wrapper"></div>
+
     <div id="root"></div>
     <script type="module" src="/src/main.js"></script>
   </body>
