@@ -8,11 +8,11 @@ const DiseaseDetection = () => {
 
     // Style for the full-page background
     const pageStyle = {
-        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url('/static/content/background_image.jpg')`, // Replace with your actual image path
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url('/static/content/background_image.jpg')`, 
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
-        minHeight: '100vh', // Ensures it covers the full viewport height
+        minHeight: '100vh', 
         width: '100%',
         margin: 0,
         padding: '50px 20px',
@@ -56,23 +56,65 @@ const DiseaseDetection = () => {
                             className="form-control" 
                             accept="image/*"
                         />
+
+                        {/* --- PROFESSIONAL IMAGE PREVIEW SECTION --- */}
+                        {selectedFile && (
+                            <div className="mt-2 text-center">
+                                <div style={{
+                                    border: '2px dashed #cbd5e1',
+                                    borderRadius: '12px',
+                                    padding: '10px',
+                                    backgroundColor: '#f8fafc',
+                                    display: 'inline-block',
+                                    position: 'relative'
+                                }}>
+                                    <img 
+                                        src={URL.createObjectURL(selectedFile)} 
+                                        alt="Selected Plant" 
+                                        style={{ 
+                                            maxWidth: '100%', 
+                                            maxHeight: '280px', 
+                                            borderRadius: '8px', 
+                                            display: 'block',
+                                            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                                        }} 
+                                    />
+                                    <span className="badge bg-dark mt-2" style={{ opacity: 0.8 }}>
+                                        Selected Image
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                        {/* ----------------------------------------- */}
+
                         <button 
                             onClick={handleUpload} 
-                            className="btn btn-primary btn-lg w-100"
+                            className="btn btn-primary btn-lg w-100 mt-2"
                             disabled={loading}
-                            style={{ backgroundColor: '#2563eb', border: 'none' }}
+                            style={{ backgroundColor: '#2563eb', border: 'none', fontWeight: '600' }}
                         >
-                            {loading ? "Analyzing..." : "Analyze Plant Health"}
+                            {loading ? (
+                                <span>
+                                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    Analyzing...
+                                </span>
+                            ) : "Analyze Plant Health"}
                         </button>
                     </div>
                 </div>
                 
                 {result && result.status === "success" && (
-                    <div className="mt-4 p-4 bg-white border-0 rounded shadow-lg">
-                        <h3 className="text-capitalize">Diagnosis: {result.disease}</h3>
-                        <p className="badge bg-success">Confidence: {result.confidence}</p>
+                    <div className="mt-4 p-4 bg-white border-0 rounded shadow-lg animate__animated animate__fadeIn">
+                        <div className="d-flex justify-content-between align-items-center">
+                            <h3 className="text-capitalize mb-0" style={{ color: '#1e293b', fontWeight: '700' }}>
+                                Diagnosis: {result.disease}
+                            </h3>
+                            <span className="badge bg-success p-2" style={{ fontSize: '0.9rem' }}>
+                                Confidence: {result.confidence}
+                            </span>
+                        </div>
                         <hr />
-                        <div style={{ whiteSpace: 'pre-wrap' }}>
+                        <div style={{ whiteSpace: 'pre-wrap', color: '#475569', lineHeight: '1.6' }}>
                             {result.ai_explanation}
                         </div>
                     </div>
