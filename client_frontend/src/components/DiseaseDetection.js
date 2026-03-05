@@ -6,16 +6,12 @@ const DiseaseDetection = () => {
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    // Style for the full-page background
+    // Style for the container
     const pageStyle = {
-        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url('/static/content/background_image.jpg')`, 
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-        minHeight: '100vh', 
+        minHeight: '89vh',
         width: '100%',
         margin: 0,
-        padding: '50px 20px',
+        padding: '40px 20px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center'
@@ -23,7 +19,7 @@ const DiseaseDetection = () => {
 
     const handleUpload = async () => {
         if (!selectedFile) return alert("Please select an image");
-        
+
         const formData = new FormData();
         formData.append('file', selectedFile);
 
@@ -43,17 +39,16 @@ const DiseaseDetection = () => {
 
     return (
         <div style={pageStyle}>
-            <div className="container" style={{ maxWidth: '800px' }}>
-                <div className="card p-5 shadow-lg border-0" style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)', borderRadius: '15px' }}>
-                    <h1 className="text-center mb-4" style={{ fontWeight: '700', color: '#1f2937' }}>
-                        Plant Disease Detection
+            <div className="container" style={{ maxWidth: '900px' }}>
+                <div style={{ padding: '20px' }}>
+                    <h1 className="text-center mb-4" style={{ fontWeight: '800', color: '#1e40af' }}><i class="fas fa-leaf"></i> Plant Disease Detection
                     </h1>
-                    
+
                     <div className="d-flex flex-column gap-3">
-                        <input 
-                            type="file" 
-                            onChange={(e) => setSelectedFile(e.target.files[0])} 
-                            className="form-control" 
+                        <input
+                            type="file"
+                            onChange={(e) => setSelectedFile(e.target.files[0])}
+                            className="form-control"
                             accept="image/*"
                         />
 
@@ -61,23 +56,23 @@ const DiseaseDetection = () => {
                         {selectedFile && (
                             <div className="mt-2 text-center">
                                 <div style={{
-                                    border: '2px dashed #cbd5e1',
+                                    border: '2px dashed #9fabb9ff',
                                     borderRadius: '12px',
                                     padding: '10px',
                                     backgroundColor: '#f8fafc',
                                     display: 'inline-block',
                                     position: 'relative'
                                 }}>
-                                    <img 
-                                        src={URL.createObjectURL(selectedFile)} 
-                                        alt="Selected Plant" 
-                                        style={{ 
-                                            maxWidth: '100%', 
-                                            maxHeight: '280px', 
-                                            borderRadius: '8px', 
+                                    <img
+                                        src={URL.createObjectURL(selectedFile)}
+                                        alt="Selected Plant"
+                                        style={{
+                                            maxWidth: '100%',
+                                            maxHeight: '280px',
+                                            borderRadius: '8px',
                                             display: 'block',
                                             boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
-                                        }} 
+                                        }}
                                     />
                                     <span className="badge bg-dark mt-2" style={{ opacity: 0.8 }}>
                                         Selected Image
@@ -87,8 +82,8 @@ const DiseaseDetection = () => {
                         )}
                         {/* ----------------------------------------- */}
 
-                        <button 
-                            onClick={handleUpload} 
+                        <button
+                            onClick={handleUpload}
                             className="btn btn-primary btn-lg w-100 mt-2"
                             disabled={loading}
                             style={{ backgroundColor: '#2563eb', border: 'none', fontWeight: '600' }}
@@ -102,11 +97,16 @@ const DiseaseDetection = () => {
                         </button>
                     </div>
                 </div>
-                
+
                 {result && result.status === "success" && (
-                    <div className="mt-4 p-4 bg-white border-0 rounded shadow-lg animate__animated animate__fadeIn">
+                    <div className="mt-4 p-4 rounded shadow-lg animate__animated animate__fadeIn" style={{
+                        backgroundColor: 'rgba(255, 254, 254, 0.7)',
+                        backdropFilter: 'blur(10px)',
+                        border: '1px solid rgba(255, 255, 255, 0.5)',
+                        borderRadius: '20px'
+                    }}>
                         <div className="d-flex justify-content-between align-items-center">
-                            <h3 className="text-capitalize mb-0" style={{ color: '#1e293b', fontWeight: '700' }}>
+                            <h3 className="text-capitalize mb-0" style={{ color: '#1e293b', fontWeight: '800' }}>
                                 Diagnosis: {result.disease}
                             </h3>
                             <span className="badge bg-success p-2" style={{ fontSize: '0.9rem' }}>

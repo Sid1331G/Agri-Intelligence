@@ -15,18 +15,18 @@ const Insight = () => {
     return (
         <div id="insight" className="tab-content active" style={{ display: 'block', padding: '20px' }}>
             <h1 style={{ textAlign: 'center' }}>Market trends and analysis for pulses and vegetables.</h1>
-            
+
             {/* Top Navigation for Pulses vs Vegetables */}
             <div className="sub-tabs" style={{ textAlign: 'center', marginBottom: '20px' }}>
-                <button 
-                    className={`sub-tab-button ${activeCategory === 'pulses' ? 'active' : ''}`} 
+                <button
+                    className={`sub-tab-button ${activeCategory === 'pulses' ? 'active' : ''}`}
                     onClick={() => handleCategoryChange('pulses')}
                     style={{ marginRight: '10px', padding: '10px', cursor: 'pointer' }}
                 >
                     Pulses (Category & Variety)
                 </button>
-                <button 
-                    className={`sub-tab-button ${activeCategory === 'vegetables' ? 'active' : ''}`} 
+                <button
+                    className={`sub-tab-button ${activeCategory === 'vegetables' ? 'active' : ''}`}
                     onClick={() => handleCategoryChange('vegetables')}
                     style={{ padding: '10px', cursor: 'pointer' }}
                 >
@@ -40,9 +40,9 @@ const Insight = () => {
                     {viewMode === 'list' ? (
                         <div id="pulses" className="sub-tab-content active">
                             <h3>
-                                Pulses 
-                                <button 
-                                    className="sub-tab-button" 
+                                Pulses
+                                <button
+                                    className="sub-tab-button"
                                     onClick={() => setViewMode('details')}
                                     style={{ marginLeft: '15px', padding: '5px 15px', fontSize: '0.9em', cursor: 'pointer' }}
                                 >
@@ -78,14 +78,14 @@ const Insight = () => {
                         </div>
                     ) : (
                         <div id="pulses-details" className="sub-tab-content active">
-                            <button 
+                            <button
                                 onClick={() => setViewMode('list')}
                                 style={{ marginBottom: '15px', padding: '5px 15px', cursor: 'pointer' }}
                             >
                                 ← Back to List
                             </button>
                             <h2 style={{ textAlign: 'center' }}>Details about the Pulses</h2>
-                    
+
                             <h2 style={{ textAlign: 'center', marginTop: '30px' }}>Lentils</h2>
                             <table className="table table-bordered" style={{ width: '100%' }}>
                                 <thead className="table-light">
@@ -136,9 +136,9 @@ const Insight = () => {
                     {viewMode === 'list' ? (
                         <div id="vegetables" className="sub-tab-content active">
                             <h3>
-                                Vegetables 
-                                <button 
-                                    className="sub-tab-button" 
+                                Vegetables
+                                <button
+                                    className="sub-tab-button"
                                     onClick={() => setViewMode('details')}
                                     style={{ marginLeft: '15px', padding: '5px 15px', fontSize: '0.9em', cursor: 'pointer' }}
                                 >
@@ -174,7 +174,7 @@ const Insight = () => {
                         </div>
                     ) : (
                         <div id="vegetables-details" className="sub-tab-content active">
-                            <button 
+                            <button
                                 onClick={() => setViewMode('list')}
                                 style={{ marginBottom: '15px', padding: '5px 15px', cursor: 'pointer' }}
                             >
@@ -193,7 +193,7 @@ const Insight = () => {
                                     <tr><td>Fenugreek</td><td>Methi</td><td>Trigonella foenum-graecum</td><td>Winter</td><td>15-25°C</td><td>Iron, Calcium</td><td>Curries, Parathas</td></tr>
                                 </tbody>
                             </table>
-                        
+
                             <h2 style={{ textAlign: 'center', marginTop: '30px' }}>Root Vegetables</h2>
                             <table className="table table-bordered" style={{ width: '100%' }}>
                                 <thead className="table-light">
@@ -205,7 +205,7 @@ const Insight = () => {
                                     <tr><td>Radish</td><td>Muli</td><td>Raphanus sativus</td><td>Winter</td><td>10-20°C</td><td>Vitamin C, Potassium</td><td>Salads, Pickles</td></tr>
                                 </tbody>
                             </table>
-                        
+
                             <h2 style={{ textAlign: 'center', marginTop: '30px' }}>Fruiting Vegetables</h2>
                             <table className="table table-bordered" style={{ width: '100%' }}>
                                 <thead className="table-light">
@@ -215,6 +215,18 @@ const Insight = () => {
                                     <tr><td>Tomato</td><td>Tamatar</td><td>Solanum lycopersicum</td><td>Summer</td><td>20-30°C</td><td>Vitamin C, Potassium</td><td>Salads, Sauces</td></tr>
                                     <tr><td>Brinjal</td><td>Baingan</td><td>Solanum melongena</td><td>Summer</td><td>20-30°C</td><td>Fiber, Vitamins B1, B6</td><td>Curries, Grilled</td></tr>
                                     <tr><td>Capsicum</td><td>Shimla Mirch</td><td>Capsicum annuum</td><td>Summer</td><td>20-30°C</td><td>Vitamin C, Antioxidants</td><td>Salads, Stir-Fry</td></tr>
+                                </tbody>
+                            </table>
+
+                            <h2 style={{ textAlign: 'center', marginTop: '30px' }}>Cruciferous Vegetables</h2>
+                            <table className="table table-bordered" style={{ width: '100%' }}>
+                                <thead className="table-light">
+                                    <tr><th>Name</th><th>Common Name</th><th>Scientific Name</th><th>Season</th><th>Temperature</th><th>Nutritional Value</th><th>Uses</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Cabbage</td><td>Patta Gobhi</td><td>Brassica oleracea (Capitata)</td><td>Winter</td><td>15-20°C</td><td>Vitamin C, K, Fiber</td><td>Salads, Stir-Fry, Soups</td></tr>
+                                    <tr><td>Cauliflower</td><td>Phool Gobhi</td><td>Brassica oleracea (Botrytis)</td><td>Winter</td><td>15-20°C</td><td>Vitamin C, Folate, Fiber</td><td>Curries, Roasted, Soups</td></tr>
+                                    <tr><td>Broccoli</td><td>Haree Gobhi</td><td>Brassica oleracea (Italica)</td><td>Winter</td><td>15-20°C</td><td>Vitamin C, K, Iron, Calcium</td><td>Stir-Fry, Soups, Salads</td></tr>
                                 </tbody>
                             </table>
                         </div>

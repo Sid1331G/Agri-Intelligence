@@ -3,11 +3,15 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f5f7fa;
-    display: flex;
-    flex-direction: column;
     min-height: 100vh;
     color: #333;
     overflow-x: hidden;
+}
+
+.App {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .header {
@@ -75,11 +79,13 @@ body {
 .content {
     flex: 1;
     padding: 20px;
-    background: linear-gradient(rgba(255, 255, 255, 0.034), rgba(255, 255, 255, 0.384)), 
-                url('https://plantcelltechnology.com/cdn/shop/articles/horticulture-crop.jpg?v=1708230882&width=1100') no-repeat center center;
+    background: linear-gradient(rgba(255, 255, 255, 0.034), rgba(255, 255, 255, 0.384)),
+        url('https://plantcelltechnology.com/cdn/shop/articles/horticulture-crop.jpg?v=1708230882&width=1100') no-repeat center center;
     background-size: cover;
+    background-attachment: fixed;
     position: relative;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .sub-tabs {
@@ -118,20 +124,26 @@ body {
     border-color: #93c4fd;
 }
 
-.tab-content, .sub-tab-content {
+.tab-content,
+.sub-tab-content {
     display: none;
-    background-color: rgba(255, 255, 255, 0.76);
-    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 24px;
     box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255,255,255,0.7);
     padding: 20px;
     margin-top: 15px;
     overflow-x: auto;
+    font-weight: 800;
+
 }
 
 .sub-tab-content1 {
     display: none;
-    background-color: rgba(103, 247, 115, 0.6);
-    border-radius: 8px;
+    background-color: rgba(103, 247, 115, 0.5);
+    border-radius: 24px;
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
     padding: 20px;
     margin: 15px auto;
@@ -139,7 +151,9 @@ body {
     max-width: 1200px;
 }
 
-.tab-content.active, .sub-tab-content.active, .sub-tab-content1.active {
+.tab-content.active,
+.sub-tab-content.active,
+.sub-tab-content1.active {
     display: block;
     animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -149,6 +163,7 @@ body {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -162,7 +177,9 @@ table {
     background-color: rgba(255, 255, 255, 0.9);
 }
 
-table, th, td {
+table,
+th,
+td {
     border: 1px solid #ddd;
     padding: 10px;
     text-align: left;
@@ -217,7 +234,8 @@ th {
     margin: 20px 0;
 }
 
-#variety-section select, #category {
+#variety-section select,
+#category {
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
@@ -255,7 +273,8 @@ th {
     color: black;
 }
 
-#predictionTable th, #predictionTable td {
+#predictionTable th,
+#predictionTable td {
     border: 1px solid #ddd;
     padding: 10px;
     text-align: left;
@@ -277,8 +296,12 @@ th {
     flex-direction: column;
     align-items: center;
     transition: 0.5s;
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 24px;
+
 }
 
 .form-box {
@@ -443,7 +466,8 @@ a:hover {
 }
 
 /* Ensure details about pulses/vegetables are readable */
-#pulses-details, #vegetables-details {
+#pulses-details,
+#vegetables-details {
     max-height: 80vh;
     overflow-y: auto;
 }
@@ -541,8 +565,8 @@ a:hover {
 }
 
 /* Add some spacing between sections */
-.sub-tab-content1 h1, 
-.sub-tab-content h2, 
+.sub-tab-content1 h1,
+.sub-tab-content h2,
 .tab-content h1 {
     margin-top: 20px;
     margin-bottom: 15px;
@@ -551,7 +575,7 @@ a:hover {
 
 /* Make the About section more readable */
 #about p {
-    max-width: 800px;
+    max-width: 900px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -597,7 +621,8 @@ a:hover {
     gap: 15px;
 }
 
-.date-range, .specific-date {
+.date-range,
+.specific-date {
     padding: 15px;
     border: 1px solid #eee;
     border-radius: 8px;
@@ -654,42 +679,45 @@ a:hover {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .sub-tab-content, .tab-content {
+
+    .sub-tab-content,
+    .tab-content {
         padding: 15px;
     }
-    
+
     table {
         display: block;
         overflow-x: auto;
         white-space: nowrap;
     }
-    
-    th, td {
+
+    th,
+    td {
         padding: 8px;
         font-size: 14px;
     }
-    
+
     /* Feature card responsive */
     .feature-card {
         flex-direction: column;
         text-align: center;
         gap: 15px;
     }
-    
+
     .feature-card img {
         width: 100%;
         max-width: 250px;
         height: 160px;
     }
-    
+
     .feature-icon {
         margin-left: 0;
     }
-    
+
     .feature-content {
         padding-left: 0;
     }
-    
+
     .mission-stats {
         flex-direction: column;
         align-items: center;
@@ -702,41 +730,50 @@ a:hover {
         justify-content: center;
         padding: 10px;
     }
-    
+
     .header h2 {
         order: -1;
         width: 100%;
         margin-bottom: 10px !important;
     }
-    
+
     .tab-button {
         margin: 3px;
         padding: 8px 12px;
         font-size: 12px;
     }
-    
+
     .content {
         padding: 15px;
     }
-    
+
     .sub-tab-content1 {
         width: 95%;
         padding: 15px;
     }
-    
+
     .overlay-content {
         width: 95%;
         padding: 15px;
     }
-    
+
     .filter-section {
         grid-template-columns: 1fr;
     }
-    
+
     .format-options {
         flex-direction: column;
         align-items: flex-start;
     }
-    
-    
+}
+
+/* Login glassmorphism input placeholders */
+.login-input::placeholder {
+    color: #464f5a;
+}
+
+.login-input:focus {
+    border-color: #10b981 !important;
+    background: rgba(255, 255, 255, 1) !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
 }

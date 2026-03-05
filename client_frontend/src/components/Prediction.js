@@ -79,68 +79,82 @@ const PredictionComponent = () => {
     };
 
     return (
-        <div className="prediction-container" style={{ padding: '200px', maxWidth: '1200px', margin: '0 auto' }}>
-            <h2 style={{ textAlign: 'center', color: '#ffffff' }}>Commodity Price Forecast</h2>
-            
-            <form onSubmit={getPrediction} style={{ 
-                display: 'flex', 
-                gap: '15px', 
-                justifyContent: 'center', 
-                marginBottom: '50px',
-                flexWrap: 'wrap' 
+        <div className="prediction-container" style={{ padding: '40px 20px', maxWidth: '1200px', margin: '0 auto' }}>
+            <div style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.45)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                borderRadius: '24px',
+                padding: '40px',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                boxShadow: '0 15px 35px rgba(0,0,0,0.1)',
+                marginBottom: '40px'
             }}>
-                {/* Category Selection */}
-                <select 
-                    value={category} 
-                    onChange={(e) => {
-                        setCategory(e.target.value);
-                        setVariety(''); // Reset variety when category changes
-                    }}
-                    required
-                    style={{ padding: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
-                >
-                    <option value="">Select Category</option>
-                    <option value="pulses">Pulses</option>
-                    <option value="vegetables">Vegetables</option>
-                </select>
+                <h1 style={{ textAlign: 'center', color: '#1e40af', marginBottom: '30px', 
+                    fontWeight: '800', maxWidth: '900px' }}><i class="fas fa-chart-line"></i> Commodity Price Forecast</h1>
 
-                {/* Dynamic Variety Selection based on Category */}
-                <select 
-                    value={variety} 
-                    onChange={(e) => setVariety(e.target.value)} 
-                    disabled={!category}
-                    required
-                    style={{ padding: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
-                >
-                    <option value="">Select a Variety</option>
-                    {category && varieties[category].map(option => (
-                        <option key={option} value={option}>{option}</option>
-                    ))}
-                </select>
+                <form onSubmit={getPrediction} style={{
+                    display: 'flex',
+                    gap: '15px',
+                    justifyContent: 'center',
+                    flexWrap: 'wrap'
+                }}>
+                    {/* Category Selection */}
+                    <select
+                        value={category}
+                        onChange={(e) => {
+                            setCategory(e.target.value);
+                            setVariety(''); // Reset variety when category changes
+                        }}
+                        required
+                        style={{ padding: '12px', borderRadius: '10px', border: '1px solid #ddd', minWidth: '200px' }}
+                    >
+                        <option value="">Select Category</option>
+                        <option value="pulses">Pulses</option>
+                        <option value="vegetables">Vegetables</option>
+                    </select>
 
-                <button 
-                    type="submit" 
-                    disabled={loading}
-                    style={{ 
-                        padding: '10px 20px', 
-                        backgroundColor: '#27ae60', 
-                        color: 'white', 
-                        border: 'none', 
-                        borderRadius: '5px',
-                        cursor: 'pointer'
-                    }}
-                >
-                    {loading ? "Predicting..." : "Get 5-Week Forecast"}
-                </button>
-            </form>
+                    {/* Dynamic Variety Selection based on Category */}
+                    <select
+                        value={variety}
+                        onChange={(e) => setVariety(e.target.value)}
+                        disabled={!category}
+                        required
+                        style={{ padding: '12px', borderRadius: '10px', border: '1px solid #ddd', minWidth: '200px' }}
+                    >
+                        <option value="">Select a Variety</option>
+                        {category && varieties[category].map(option => (
+                            <option key={option} value={option}>{option}</option>
+                        ))}
+                    </select>
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="tab-button"
+                        style={{
+                            padding: '12px 30px',
+                            backgroundColor: '#27ae60',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '10px',
+                            cursor: 'pointer',
+                            fontWeight: '600',
+                            boxShadow: '0 4px 12px rgba(39, 174, 96, 0.3)'
+                        }}
+                    >
+                        {loading ? "Predicting..." : "Get 5-Week Forecast"}
+                    </button>
+                </form>
+            </div>
 
             {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
 
             {/* Prediction Cards Grid */}
-            <div className="prediction-results" style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', 
-                gap: '20px' 
+            <div className="prediction-results" style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+                gap: '20px'
             }}>
                 {predictions.map((item, index) => (
                     <div key={index} className="prediction-card" style={{

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, session, render_template, send_from_directory, send_file, redirect, url_for
+from flask import Flask, request, jsonify, session, render_template, send_from_directory, send_file
 import pickle
 import numpy as np
 import pandas as pd
@@ -432,10 +432,10 @@ def login():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route("/logout")
-def logout():
+@app.route("/api/logout", methods=["POST"])
+def api_logout():
     session.pop("user", None)
-    return redirect(url_for("index"))
+    return jsonify({"message": "Logged out successfully"}), 200
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

@@ -11,5 +11,7 @@ requests
 torch
 torchvision
 transformers
+huggingface_hub
+Pillow
 google-genai
 python-dotenv
