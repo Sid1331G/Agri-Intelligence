@@ -141,95 +141,22 @@ def chat():
         return jsonify({"error": str(e)}), 500
 
 
-# Load model and column order
-with open(r"models/xgboost_model.pkl", "rb") as model_file:
-    model = pickle.load(model_file)
-with open(r"models/column_order.pkl", "rb") as columns_file:
-    column_order = pickle.load(columns_file)
+# Prediction Model logic is now handled in daily_prediction.py
 
-
-# COMMODITY_PRICE_RANGES omitted here for brevity — keep yours as is
-COMMODITY_PRICE_RANGES = {
-# Vegetables
-    'Ashgourd': {"min_price_range": (1000, 1500), "max_price_range": (1800, 2500)}, # Adjusted for Ashgourd
-    'Broad Beans': {"min_price_range": (2000, 3000), "max_price_range": (3000, 4000)}, # Adjusted for Broad Beans
-    'Bitter Gourd': {"min_price_range": (2000, 3000), "max_price_range": (3700, 4000)}, # Adjusted for Bitter Gourd
-    'Bottle Gourd': {"min_price_range": (1000, 2500), "max_price_range": (2500, 3500)}, # Adjusted for Bottle Gourd
-    'Brinjal': {"min_price_range": (2000, 3300), "max_price_range": (3400, 4000)}, # Adjusted for Brinjal
-    'Cabbage': {"min_price_range": (1000, 1500), "max_price_range": (1500, 2000)}, # Adjusted for Cabbage
-    'Capsicum': {"min_price_range": (3000, 3800), "max_price_range": (3900, 4600)}, # Adjusted for Capsicum
-    'Carrot': {"min_price_range": (3000, 3700), "max_price_range": (3700, 4200)}, # Adjusted for Carrot
-    'Cluster Beans': {"min_price_range": (3000, 3700), "max_price_range": (3800, 4300)}, # Adjusted for Cluster Beans
-    'Coriander (Leaves)': {"min_price_range": (500, 800), "max_price_range": (800, 1300)}, # Adjusted for Coriander
-    'Cauliflower': {"min_price_range": (1800, 2800), "max_price_range": (2500, 3000)}, # Adjusted for Cauliflower
-    'Drumstick': {"min_price_range": (7000, 7500), "max_price_range": (7800, 8400)}, # Adjusted for Drumstick
-    'Green Chilli': {"min_price_range": (2000, 3200), "max_price_range": (3000, 4500)}, # Adjusted for Green Chilli
-    'Onion': {"min_price_range": (1000, 1500), "max_price_range": (2000, 2500)}, # Adjusted for Onion
-    'Potato': {"min_price_range": (2000, 2500), "max_price_range": (2500, 3500)}, # Adjusted for Potato
-    'Pumpkin': {"min_price_range": (900, 1700), "max_price_range": (1800, 2400)}, # Adjusted for Pumpkin
-    'Raddish': {"min_price_range": (2000, 2000), "max_price_range": (2200, 3000)}, # Adjusted for Raddish
-    'Snakeguard': {"min_price_range": (1400, 2500), "max_price_range": (2700, 3400)}, # Adjusted for Snakeguard
-    'Sweet Potato': {"min_price_range": (4500, 5700), "max_price_range": (5500, 6500)},
-    'Tomato': {"min_price_range": (1000, 1500), "max_price_range": (1500, 2000)}, # Adjusted for Tomato
-    # Pulses
-    "Arhar (Tur/Red Gram)(Whole)": {"min_price_range": (2000, 4500), "max_price_range": (4800, 6000)},
-    "Bengal Gram (Gram)(Whole)": {"min_price_range": (3000, 3800), "max_price_range": (4000, 4500)},
-    "Bengal Gram Dal (Chana Dal)": {"min_price_range": (6000, 8000), "max_price_range": (8000, 10000)},
-    "Black Gram (Urd Beans)(Whole)": {"min_price_range": (6000, 7600), "max_price_range": (7700, 8500)},
-    "Black Gram Dal (Urd Dal)": {"min_price_range": (9000, 13500), "max_price_range": (13000, 15000)},
-    "Green Gram (Moong)(Whole)": {"min_price_range": (6000, 7000), "max_price_range": (7000, 8000)},
-    "Green Gram Dal (Moong Dal)": {"min_price_range": (8000, 9000), "max_price_range": (9200, 10000)},
-    "Kabuli Chana (Chickpeas-White)": {"min_price_range": (6000, 8500), "max_price_range": (8000, 9000)},
-    "Kulthi (Horse Gram)": {"min_price_range": (4000, 5300), "max_price_range": (5500, 6500)},
-    "Moath Dal": {"min_price_range": (1700, 1900), "max_price_range": (1900, 2400)},
-    
+VALID_COMMODITIES = {
+    'Ashgourd', 'Broad Beans', 'Bitter Gourd', 'Bottle Gourd', 'Brinjal', 'Cabbage',
+    'Capsicum', 'Carrot', 'Cluster Beans', 'Coriander (Leaves)', 'Cauliflower', 'Drumstick',
+    'Green Chilli', 'Onion', 'Potato', 'Pumpkin', 'Raddish', 'Snakeguard', 'Sweet Potato', 'Tomato',
+    'Arhar (Tur/Red Gram)(Whole)', 'Bengal Gram (Gram)(Whole)', 'Bengal Gram Dal (Chana Dal)',
+    'Black Gram (Urd Beans)(Whole)', 'Black Gram Dal (Urd Dal)', 'Green Gram (Moong)(Whole)',
+    'Green Gram Dal (Moong Dal)', 'Kabuli Chana (Chickpeas-White)', 'Kulthi (Horse Gram)', 'Moath Dal'
 }
 
 @app.route('/')
 def index():
     return send_from_directory('static', 'index.html')
 
-def generate_weekly_predictions(commodity_name, num_weeks=10):
-    predictions = []
-    start_date = datetime.today()
-
-    price_ranges = COMMODITY_PRICE_RANGES[commodity_name]
-    min_price_range = price_ranges["min_price_range"]
-    max_price_range = price_ranges["max_price_range"]
-
-    for i in range(num_weeks):
-        future_date = start_date + timedelta(weeks=i)
-
-        future_data = {
-            'Min_Price': [random.randint(*min_price_range)],
-            'Max_Price': [random.randint(*max_price_range)],
-            'Arrival_Year': [future_date.year],
-            'Arrival_Month': [future_date.month],
-            'Arrival_Day': [future_date.day]
-        }
-
-        for col in column_order:
-            if col not in future_data:
-                future_data[col] = [0]
-
-        commodity_col = f'Commodity_{commodity_name}'
-        if commodity_col in column_order:
-            future_data[commodity_col] = [1]
-
-        future_df = pd.DataFrame(future_data)
-        future_df = future_df[column_order]
-
-        future_price = model.predict(future_df)[0]
-
-        predictions.append({
-            'Date': future_date.strftime('%Y-%m-%d'),
-            'Min_Price': future_data['Min_Price'][0],
-            'Max_Price': future_data['Max_Price'][0],
-            'Predicted_Modal_Price': round(float(future_price), 2),
-            'Price_Per_kg': round(float(future_price) / 100, 2)
-        })
-
-    return predictions
+from daily_prediction import generate_daily_predictions
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -243,27 +170,31 @@ def predict():
 
         variety = variety.title()
 
-        if variety not in COMMODITY_PRICE_RANGES:
+        if variety not in VALID_COMMODITIES:
             return jsonify({"error": f"Unknown commodity: {variety}"}), 400
 
-        weekly_predictions = generate_weekly_predictions(variety, num_weeks=5)
-        return jsonify({"weekly_predictions": weekly_predictions})
+        daily_predictions = generate_daily_predictions(variety, num_days=7)
+        return jsonify({"daily_predictions": daily_predictions})
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 @app.route('/predict/<commodity>', methods=['GET'])
 def predict_commodity(commodity):
     try:
         variety = commodity.title()
-        if variety not in COMMODITY_PRICE_RANGES:
+        if variety not in VALID_COMMODITIES:
             return jsonify({"error": f"Unknown commodity: {variety}"}), 400
 
-        weekly_predictions = generate_weekly_predictions(variety, num_weeks=5)
+        daily_predictions = generate_daily_predictions(variety, num_days=7)
         return jsonify({
             "commodity": variety,
-            "weekly_predictions": weekly_predictions
+            "daily_predictions": daily_predictions
         })
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 # Plant Disease Detection Setup
@@ -323,30 +254,24 @@ The plant disease detection model predicted:
 Disease: {disease_label}
 Confidence: {confidence*100:.2f}%
 
-Provide response in this format:
+Provide a VERY SHORT response. MAX 3 bullet points per section. One sentence per bullet. No extra explanation.
 
 ## Disease Overview
-Explain what this disease is.
+One sentence only.
 
 ## Symptoms
-Explain visible symptoms farmers should observe.
+- Key symptom 1.
+- Key symptom 2.
 
 ## Causes
-Explain why this disease occurs.
+- Main cause.
+- Contributing factor.
 
-## Chemical Treatment
-Recommend practical chemical solutions.
+## Treatment
+- Treatment option 1.
+- Treatment option 2.
 
-## Organic Treatment
-Recommend eco-friendly solutions.
-
-## Prevention
-Explain how to prevent recurrence.
-
-## Farmer Action Plan
-Provide step-by-step guidance farmers can follow.
-
-Keep language simple and practical.
+STRICT: Keep every bullet under 30 words. Be direct.
 """
 
         response = gemini_client.models.generate_content(
@@ -378,7 +303,7 @@ def detect_disease():
         return jsonify({"error": "Disease prediction failed"}), 500
 
     # Step 2: Generate AI awareness only if confidence > threshold
-    if confidence >= 0.60:
+    if confidence >= 0.50:
         ai_explanation = generate_disease_awareness(label, confidence)
     else:
         ai_explanation = "Model confidence is low. Please upload a clearer image."
