@@ -15,7 +15,7 @@ const Home = () => {
                 <h1><i className="fas fa-info-circle"></i> About PANDAM VILAI</h1>
                 <p style={{ fontSize: 'large', color: '#223b34ff', textIndent: '30px', textAlign: 'justify' }}>
                     PANDAM VILAI is a cutting-edge agricultural market intelligence platform that delivers accurate price predictions for agri-horticultural commodities, empowering farmers, traders, policymakers, and consumers with the tools needed for smarter, data-driven decisions.
-                    By forecasting prices up to 5 weeks in advance, our platform transforms agricultural commerce through predictive analytics and intuitive design. Our process integrates historical market trends with sophisticated machine learning to ensure stakeholders have access to real-time crop images to identify diseases using our deep learning model and receive immediate chemical or organic treatment plans and intelligent conversational support at every stage of the cultivation cycle.
+                    By forecasting prices up to 7 Days, our platform transforms agricultural commerce through predictive analytics and intuitive design. Our process integrates historical market trends with sophisticated machine learning to ensure stakeholders have access to real-time crop images to identify diseases using our deep learning model and receive immediate chemical or organic treatment plans and intelligent conversational support at every stage of the cultivation cycle.
                 </p>
             </div>
 
