@@ -100,7 +100,7 @@ function App() {
             <i className="fas fa-chart-line"></i> Insights
           </NavLink>*/}
           <NavLink to="/prediction" className={({ isActive }) => isActive ? "tab-button active" : "tab-button"}>
-            <i class="fas fa-chart-line"></i> Prediction
+            <i className="fas fa-chart-line"></i> Prediction
           </NavLink>
           <NavLink to="/disease-detection" className={({ isActive }) => isActive ? "tab-button active" : "tab-button"}>
             <i className="fas fa-leaf"></i> Disease Detection

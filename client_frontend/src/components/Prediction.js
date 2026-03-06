@@ -66,10 +66,11 @@ const PredictionComponent = () => {
             const data = await response.json();
 
             if (response.ok) {
-                // Accesses the 'weekly_predictions' array from your Flask response
-                setPredictions(data.weekly_predictions);
+                // Accesses the 'daily_predictions' array from your Flask response
+                setPredictions(data.daily_predictions || []);
             } else {
                 setError(data.error || "Failed to fetch data");
+                setPredictions([]);
             }
         } catch (err) {
             setError("Server connection failed. Check if app.py is running.");
@@ -90,8 +91,10 @@ const PredictionComponent = () => {
                 boxShadow: '0 15px 35px rgba(0,0,0,0.1)',
                 marginBottom: '40px'
             }}>
-                <h1 style={{ textAlign: 'center', color: '#1e40af', marginBottom: '30px', 
-                    fontWeight: '800', maxWidth: '900px' }}><i class="fas fa-chart-line"></i> Commodity Price Forecast</h1>
+                <h1 style={{
+                    textAlign: 'center', color: '#1e40af', marginBottom: '30px',
+                    fontWeight: '800', maxWidth: '900px'
+                }}><i className="fas fa-chart-line"></i> Commodity Price Forecast</h1>
 
                 <form onSubmit={getPrediction} style={{
                     display: 'flex',
@@ -143,7 +146,7 @@ const PredictionComponent = () => {
                             boxShadow: '0 4px 12px rgba(39, 174, 96, 0.3)'
                         }}
                     >
-                        {loading ? "Predicting..." : "Get 5-Week Forecast"}
+                        {loading ? "Predicting..." : "Get 7-Day Forecast"}
                     </button>
                 </form>
             </div>
@@ -158,24 +161,39 @@ const PredictionComponent = () => {
             }}>
                 {predictions.map((item, index) => (
                     <div key={index} className="prediction-card" style={{
-                        border: '1px solid #ddd',
+                        border: item.Type === 'Today Price' ? '2px solid #27ae60' : '1px solid #ddd',
                         padding: '20px',
                         borderRadius: '12px',
                         backgroundColor: '#fff',
-                        boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                        position: 'relative'
                     }}>
-                        <h3 style={{ marginTop: 0, color: '#27ae60' }}>Week {index + 1}</h3>
+                        {item.Type === 'Today Price' && (
+                            <span style={{
+                                position: 'absolute',
+                                top: '-10px',
+                                right: '10px',
+                                backgroundColor: '#27ae60',
+                                color: 'white',
+                                padding: '2px 10px',
+                                borderRadius: '10px',
+                                fontSize: '0.7rem',
+                                fontWeight: 'bold'
+                            }}>LIVE</span>
+                        )}
+                        <h3 style={{ marginTop: 0, color: item.Type === 'Today Price' ? '#27ae60' : '#1e40af' }}>{item.Day}</h3>
                         <p style={{ fontSize: '0.9rem', color: '#666' }}><strong>Date:</strong> {item.Date}</p>
-                        <p style={{ fontSize: '1.1rem', margin: '10px 0' }}>
-                            <strong>Estimated:</strong> ₹{item.Price_Per_kg}/kg
-                        </p>
-                        <p style={{ fontSize: '0.85rem' }}>
-                            <strong>Modal Price:</strong> ₹{item.Predicted_Modal_Price}/quintal
+                        <p style={{ fontSize: '1.2rem', margin: '15px 0', color: '#2c3e50' }}>
+                            <strong>Price:</strong> ₹{item.Predicted_Price_Per_kg}/kg
                         </p>
                         <hr style={{ border: '0', borderTop: '1px solid #eee' }} />
-                        <small style={{ color: '#888' }}>
-                            Market Range: ₹{item.Min_Price} - ₹{item.Max_Price}
-                        </small>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+                            <small style={{ color: '#888' }}>{item.Predicted_Modal_Price_Quintal} / quintal</small>
+                            <small style={{
+                                color: item.Type === 'Today Price' ? '#27ae60' : '#f39c12',
+                                fontWeight: '600'
+                            }}>{item.Type}</small>
+                        </div>
                     </div>
                 ))}
             </div>
