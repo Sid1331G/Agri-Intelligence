@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink, Link, Navigate } from 'react-router-dom';
 import axios from 'axios';
 
 // Component Imports
 import Home from './components/Home';
-// import Insight from './components/Insight';
 import Prediction from './components/Prediction';
 import Login from './components/Login';
 import DiseaseDetection from './components/DiseaseDetection';
 import ChatAssistant from './components/ChatAssistant';
+import AIAssistant from './components/AIAssistant';
+import RoleSelection from './components/RoleSelection';
+import ProfileSetup from './components/ProfileSetup';
 
 // Inline message shown when unauthenticated user visits a protected page
 const LoginRequired = ({ pageName }) => (
@@ -68,13 +70,54 @@ const LoginRequired = ({ pageName }) => (
   </div>
 );
 
+// Onboarding page: wraps RoleSelection (step 1) + ProfileSetup (step 2)
+const OnboardingPage = ({ username, onComplete }) => {
+  const [role, setRole] = useState(null);
+  if (!role) return <RoleSelection onRoleSelect={setRole} />;
+  return <ProfileSetup role={role} username={username} onComplete={onComplete} />;
+};
+
+// Edit Profile page: pre-populates existing profile
+const EditProfilePage = ({ username, onComplete }) => {
+  return <ProfileSetup role={null} username={username} onComplete={onComplete} isEditMode={true} />;
+};
+
 function App() {
   const [user, setUser] = useState(localStorage.getItem('user') || null);
+  const [profileComplete, setProfileComplete] = useState(localStorage.getItem('profileComplete') === 'true');
   const [showAccountMenu, setShowAccountMenu] = useState(false);
 
-  const handleLoginSuccess = (username) => {
+  const checkProfile = async (username) => {
+    if (!username) return;
+    try {
+      const res = await axios.get(`http://127.0.0.1:5000/profile/get?username=${encodeURIComponent(username)}`, { withCredentials: true });
+      const complete = res.data.profile_complete === true;
+      setProfileComplete(complete);
+      localStorage.setItem('profileComplete', complete ? 'true' : 'false');
+    } catch (err) {
+      console.error("Profile check failed:", err);
+      // If we get a 401/404, we assume not complete or not logged in properly
+      setProfileComplete(false);
+      localStorage.setItem('profileComplete', 'false');
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      checkProfile(user);
+    }
+  }, [user]);
+
+  const handleLoginSuccess = async (username) => {
     setUser(username);
     localStorage.setItem('user', username);
+    // State updates are async, so use the username directly
+    await checkProfile(username);
+  };
+
+  const handleProfileComplete = () => {
+    setProfileComplete(true);
+    localStorage.setItem('profileComplete', 'true');
   };
 
   const handleLogout = async () => {
@@ -84,7 +127,9 @@ function App() {
       console.error("Logout warning:", error);
     }
     setUser(null);
+    setProfileComplete(false);
     localStorage.removeItem('user');
+    localStorage.removeItem('profileComplete');
     setShowAccountMenu(false);
   };
 
@@ -105,6 +150,9 @@ function App() {
           <NavLink to="/disease-detection" className={({ isActive }) => isActive ? "tab-button active" : "tab-button"}>
             <i className="fas fa-leaf"></i> Disease Detection
           </NavLink>
+          <NavLink to="/assistant" className={({ isActive }) => isActive ? "tab-button active" : "tab-button"}>
+            <i className="fas fa-robot"></i> AI Assistant
+          </NavLink>
 
           {/*<h2 style={{ margin: 0, textAlign: 'center', flexGrow: 1, color: 'white' }}>PANDAM VILAI</h2>*/}
 
@@ -124,6 +172,15 @@ function App() {
                     <>
                       <li style={{ padding: '10px', borderBottom: '1px solid #eee', fontWeight: 'bold', color: '#059669' }}>
                         {user}
+                      </li>
+                      <li>
+                        <Link
+                          to="/edit-profile"
+                          onClick={() => setShowAccountMenu(false)}
+                          style={{ display: 'block', padding: '10px', textDecoration: 'none', color: '#374151', fontSize: '14px' }}
+                        >
+                          <i className="fas fa-user-edit" style={{ marginRight: '8px', color: '#059669' }}></i> Edit Profile
+                        </Link>
                       </li>
                       <li>
                         <button onClick={handleLogout} style={{ width: '100%', padding: '10px', cursor: 'pointer', background: 'none', border: 'none', textAlign: 'left', color: '#dc3545' }}>
@@ -149,11 +206,44 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
 
-            {/* Protected routes — show inline message instead of redirecting */}
-            {/*<Route path="/insight" element={user ? <Insight /> : <LoginRequired pageName="Insights" />} />*/}
-            <Route path="/prediction" element={user ? <Prediction /> : <LoginRequired pageName="Prediction" />} />
-            <Route path="/disease-detection" element={user ? <DiseaseDetection /> : <LoginRequired pageName="Disease Detection" />} />
-            <Route path="/chat" element={user ? <ChatAssistant /> : <LoginRequired pageName="Chat Assistant" />} />
+            {/* Onboarding route — mandatory after signup */}
+            <Route
+              path="/profile-setup"
+              element={
+                user
+                  ? (profileComplete
+                    ? <Navigate to="/" />
+                    : <OnboardingPage username={user} onComplete={handleProfileComplete} />)
+                  : <Navigate to="/login" />
+              }
+            />
+
+            {/* Edit Profile route — available any time after login */}
+            <Route
+              path="/edit-profile"
+              element={
+                user
+                  ? <EditProfilePage username={user} onComplete={() => { window.history.back(); }} />
+                  : <Navigate to="/login" />
+              }
+            />
+
+            {/* Protected routes */}
+            <Route path="/prediction" element={
+              !user ? <LoginRequired pageName="Prediction" /> :
+                !profileComplete ? <Navigate to="/profile-setup" /> :
+                  <Prediction />
+            } />
+            <Route path="/disease-detection" element={
+              !user ? <LoginRequired pageName="Disease Detection" /> :
+                !profileComplete ? <Navigate to="/profile-setup" /> :
+                  <DiseaseDetection />
+            } />
+            <Route path="/assistant" element={
+              !user ? <LoginRequired pageName="AI Assistant" /> :
+                !profileComplete ? <Navigate to="/profile-setup" /> :
+                  <AIAssistant />
+            } />
 
             {/* Login route — redirect to home if already logged in */}
             <Route
@@ -162,8 +252,9 @@ function App() {
             />
           </Routes>
         </main>
-        {/* Floating AI Assistant - visible globally when logged in */}
-        {user && <ChatAssistant />}
+
+        {/* Floating chatbot — always visible, no login required, website guide only */}
+        <ChatAssistant />
       </div>
     </Router>
   );

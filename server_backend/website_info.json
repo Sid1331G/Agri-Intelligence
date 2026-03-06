@@ -1,0 +1,213 @@
+{
+    "app_name": "PANDAM VILAI",
+    "tagline": "Agricultural Price Intelligence Platform for Tamil Nadu",
+    "description": "PANDAM VILAI is a smart agricultural web platform designed for farmers and commodity dealers in Tamil Nadu. It provides real-time vegetable and pulse price predictions, plant disease detection using AI, and a personalized AI assistant to help with farming and market decisions.",
+    "target_users": [
+        "Farmers",
+        "Commodity Dealers",
+        "Agricultural stakeholders in Tamil Nadu"
+    ],
+    "language_support": [
+        "English",
+        "Tamil",
+        "Hindi",
+        "Malayalam"
+    ],
+    "pages": {
+        "home": {
+            "route": "/",
+            "title": "Home",
+            "description": "The landing page that introduces PANDAM VILAI. It shows an overview of all features available on the platform.",
+            "access": "Public (no login required)"
+        },
+        "prediction": {
+            "route": "/prediction",
+            "title": "Price Prediction",
+            "description": "Predicts commodity prices for the next 7 days using an XGBoost machine learning model trained on Tamil Nadu market data (April 2024 to 2025). Day 1 shows the real-time scraped market price. Days 2-7 show AI-predicted prices with realistic market fluctuation.",
+            "access": "Login required",
+            "how_to_use": [
+                "1. Login to your account.",
+                "2. Go to the Prediction page from the navigation bar.",
+                "3. Select a commodity category (Vegetables or Pulses).",
+                "4. Select the specific commodity (e.g., Tomato, Onion, Potato).",
+                "5. Click 'Predict' to see the 7-day price forecast.",
+                "6. A chart and table will appear showing predicted prices per kg and per quintal."
+            ],
+            "chart_explanation": "The chart shows Day 1 as today's live scraped price (green bar), and Days 2-7 as AI-predicted prices. The price trend shown as rising or falling helps you plan when to sell or buy.",
+            "supported_categories": [
+                "Vegetables",
+                "Pulses"
+            ]
+        },
+        "disease_detection": {
+            "route": "/disease-detection",
+            "title": "Disease Detection",
+            "description": "Upload a photo of a plant leaf and get instant AI-powered disease identification. Uses MobileNet V2 model trained on plant disease datasets. If confidence is above 50%, Gemini AI generates a detailed disease awareness report.",
+            "access": "Login required",
+            "how_to_use": [
+                "1. Login to your account.",
+                "2. Go to the Disease Detection page from the navigation bar.",
+                "3. Click 'Upload Image' and select a clear photo of the affected plant leaf.",
+                "4. Click 'Detect Disease'.",
+                "5. The result shows the disease name, confidence percentage, and an AI-generated report with Overview, Symptoms, Causes, and Treatment sections."
+            ],
+            "tips": [
+                "Use a clear, well-lit photo of the leaf.",
+                "Make sure the diseased area is visible in the photo.",
+                "A confidence above 50% gives the most accurate result."
+            ]
+        },
+        "ai_assistant": {
+            "route": "/assistant",
+            "title": "AI Assistant",
+            "description": "A personalized AI assistant that knows your profile (district, crops grown or commodities traded) and helps you with price decisions, farming problems, pest control, market strategy, and more.",
+            "access": "Login required (profile must be complete)",
+            "how_to_use": [
+                "1. Login and complete your profile setup.",
+                "2. Click 'AI Assistant' in the navigation bar.",
+                "3. You will see a personalized greeting and quick question chips based on your role.",
+                "4. Type your question or click a suggestion chip.",
+                "5. The AI responds with context about your specific crops or commodities."
+            ]
+        },
+        "login": {
+            "route": "/login",
+            "title": "Login / Signup",
+            "description": "User authentication page. New users can sign up, existing users can log in.",
+            "how_to_signup": [
+                "1. Click 'Sign Up' tab.",
+                "2. Enter your username, email, and password.",
+                "3. Click 'Create Account'.",
+                "4. You will be guided to set up your profile (role, district, crops etc.)."
+            ],
+            "how_to_login": [
+                "1. Click 'Login' tab.",
+                "2. Enter your username and password.",
+                "3. Click 'Login to Dashboard'."
+            ]
+        }
+    },
+    "supported_commodities": {
+        "vegetables": [
+            "Ashgourd",
+            "Broad Beans",
+            "Bitter Gourd",
+            "Bottle Gourd",
+            "Brinjal",
+            "Cabbage",
+            "Capsicum",
+            "Carrot",
+            "Cluster Beans",
+            "Coriander (Leaves)",
+            "Cauliflower",
+            "Drumstick",
+            "Green Chilli",
+            "Onion",
+            "Potato",
+            "Pumpkin",
+            "Raddish",
+            "Snakeguard",
+            "Sweet Potato",
+            "Tomato"
+        ],
+        "pulses": [
+            "Arhar (Tur/Red Gram)(Whole)",
+            "Bengal Gram (Gram)(Whole)",
+            "Bengal Gram Dal (Chana Dal)",
+            "Black Gram (Urd Beans)(Whole)",
+            "Black Gram Dal (Urd Dal)",
+            "Green Gram (Moong)(Whole)",
+            "Green Gram Dal (Moong Dal)",
+            "Kabuli Chana (Chickpeas-White)",
+            "Kulthi (Horse Gram)",
+            "Moath Dal"
+        ]
+    },
+    "how_price_prediction_works": {
+        "model": "XGBoost (Extreme Gradient Boosting)",
+        "training_data": "Tamil Nadu commodity market data from April 2024 to 2025",
+        "day_1": "Real-time price scraped live from vegetablemarketprice.com",
+        "days_2_to_7": "ML model predictions using chained forecasting with realistic market variance",
+        "output": "Price per kg and price per quintal (100 kg) for each day",
+        "variance": "Each future day has a slightly wider price range to simulate real market conditions"
+    },
+    "how_disease_detection_works": {
+        "model": "MobileNet V2 (HuggingFace: linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification)",
+        "confidence_threshold": "50% — below this, AI explanation is not generated",
+        "ai_explanation_model": "Google Gemini 2.5 Flash",
+        "report_sections": [
+            "Disease Overview",
+            "Symptoms",
+            "Causes",
+            "Treatment"
+        ]
+    },
+    "user_roles": {
+        "farmer": {
+            "description": "A user who grows crops on agricultural land.",
+            "profile_fields": [
+                "district",
+                "land_size_acres",
+                "crops",
+                "farming_type",
+                "irrigation"
+            ],
+            "ai_focus": "Crop price trends, pest & disease advice, irrigation tips, seasonal recommendations, fertilizer guidance"
+        },
+        "dealer": {
+            "description": "A user who buys and sells agricultural commodities.",
+            "profile_fields": [
+                "district",
+                "business_type",
+                "market_location",
+                "commodities",
+                "trading_volume"
+            ],
+            "ai_focus": "Commodity price trends, best buying/selling times, market strategy, demand forecasting"
+        }
+    },
+    "faqs": [
+        {
+            "q": "What is PANDAM VILAI?",
+            "a": "PANDAM VILAI (which means 'commodity price' in Tamil) is an AI-powered agricultural platform for Tamil Nadu that predicts vegetable and pulse prices, detects plant diseases from leaf photos, and provides a personalized AI assistant for farmers and dealers."
+        },
+        {
+            "q": "Do I need to login to use the features?",
+            "a": "The Home page is public, but Price Prediction, Disease Detection, and the AI Assistant require you to login. You can sign up for free."
+        },
+        {
+            "q": "How accurate is the price prediction?",
+            "a": "Day 1 shows the exact live market price scraped from a real website. Days 2-7 are AI predictions based on historical Tamil Nadu market data. Predictions are indicative and should be used as planning guidance."
+        },
+        {
+            "q": "What languages are supported in the chatbot?",
+            "a": "The chatbot supports English, Tamil, Hindi, and Malayalam. You can select your preferred language in the chat window and also use voice input."
+        },
+        {
+            "q": "How do I report a problem or suggest a feature?",
+            "a": "You can ask the floating assistant for help or contact the website administrators."
+        },
+        {
+            "q": "What should I do after signing up?",
+            "a": "After signing up, you will be asked to select your role (Farmer or Dealer) and fill in your profile details. This is mandatory and helps the AI personalize your experience."
+        },
+        {
+            "q": "Can I change my profile after setup?",
+            "a": "Profile editing will be available in a future update. For now, your profile is set during the initial onboarding."
+        },
+        {
+            "q": "Why is disease detection showing low confidence?",
+            "a": "Make sure to upload a clear, well-lit photo of the leaf. Blurry or dark images reduce accuracy. Confidence below 50% means the model is unsure, so try a better quality image."
+        }
+    ],
+    "navigation_guide": {
+        "navbar_items": [
+            "Home",
+            "Prediction",
+            "Disease Detection",
+            "AI Assistant"
+        ],
+        "account_menu": "Click the profile icon (top right) to login, logout, or see your username.",
+        "floating_chatbot": "A small chat bubble is visible at the bottom-right of every page. Click it to get help anytime."
+    }
+}
