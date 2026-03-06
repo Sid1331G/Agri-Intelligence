@@ -9,9 +9,7 @@
     ],
     "language_support": [
         "English",
-        "Tamil",
-        "Hindi",
-        "Malayalam"
+        "Tamil"
     ],
     "pages": {
         "home": {
@@ -209,5 +207,12 @@
         ],
         "account_menu": "Click the profile icon (top right) to login, logout, or see your username.",
         "floating_chatbot": "A small chat bubble is visible at the bottom-right of every page. Click it to get help anytime."
-    }
+    },
+    "developers":[
+        {
+            "name":"S.Aravindan",
+            "role":["Backend Developer","Team Lead","AI Engineer","ML Engineer","Data Scientist","Web Developer","vibe coder"],
+            "github":"https://github.com/Aravind22s"
+        }
+    ]
 }
