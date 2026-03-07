@@ -24,12 +24,20 @@ const Login = ({ setUser }) => {
             }, { withCredentials: true });
 
             if (isLogin) {
-                setUser(username);
+                // Await so checkProfile() inside handleLoginSuccess finishes
+                // before navigate, ensuring profileComplete is set correctly
+                await setUser(username);
                 navigate('/');
             } else {
-                setStatusMsg({ text: 'Signup successful! Please login.', type: 'success' });
-                setIsLogin(true);
-                setPassword('');
+                // Auto-login after signup — set localStorage directly before hard redirect
+                // to avoid React state timing race on the route guard
+                await axios.post('http://127.0.0.1:5000/login', {
+                    username,
+                    password,
+                }, { withCredentials: true });
+                localStorage.setItem('user', username);
+                localStorage.setItem('profileComplete', 'false');
+                window.location.href = '/profile-setup'; // hard redirect re-reads localStorage
             }
         } catch (err) {
             setStatusMsg({ text: err.response?.data?.error || 'An error occurred. Please try again.', type: 'error' });

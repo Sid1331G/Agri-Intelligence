@@ -20,6 +20,7 @@ from transformers import AutoImageProcessor, AutoModelForImageClassification
 from huggingface_hub import login
 from dotenv import load_dotenv
 import warnings
+import json
 
 warnings.filterwarnings("ignore", category=UserWarning)
 load_dotenv()
@@ -55,21 +56,82 @@ except ConnectionFailure:
 
 gemini_client = None
 
-SYSTEM_PROMPT = """
-You are an intelligent agricultural AI assistant.
-Help farmers with:
-- Crop disease advice
-- Market price guidance
-- Farming best practices
-- Seasonal recommendations
-- Fertilizer and irrigation advice
+# Load website knowledge JSON
+WEBSITE_INFO = {}
+try:
+    _info_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "website_info.json")
+    with open(_info_path, "r", encoding="utf-8") as _f:
+        WEBSITE_INFO = json.load(_f)
+    print("✅ Website Info JSON Loaded")
+except Exception as _e:
+    print(f"⚠️ Could not load website_info.json: {_e}")
 
-Keep responses:
-- Practical
-- Clear
-- Actionable
-- Concise but helpful
+WEBSITE_INFO_STR = json.dumps(WEBSITE_INFO, indent=2)
+
+
+def build_float_system_prompt():
+    """System prompt for the floating chatbot — website guide ONLY."""
+    return f"""You are the official PANDAM VILAI website guide assistant.
+
+Your ONLY job is to help users understand and navigate the PANDAM VILAI website.
+
+WEBSITE KNOWLEDGE BASE:
+{WEBSITE_INFO_STR}
+
+Strict Rules:
+- ONLY answer questions about the PANDAM VILAI website, its features, pages, and how to use them.
+- Do NOT give farming advice, crop tips, disease treatment, or market strategy — refer users to the AI Assistant page for that.
+- If asked about something outside the website, politely say: "For personalized farming and market advice, please visit the AI Assistant page after logging in."
+- Always be friendly, concise, and helpful.
+- Guide users step by step when they ask how to use a feature.
+- Support responses in English, Tamil, Hindi, or Malayalam based on the user's message language.
 """
+
+
+def build_assistant_system_prompt(user_profile):
+    """System prompt for the dedicated AI Assistant page — deeply personalized."""
+    role = user_profile.get("role", "user")
+    username = user_profile.get("username", "User")
+    profile = user_profile.get("profile", {})
+
+    if role == "farmer":
+        role_context = f"""You are a personalized agricultural assistant for {username}, a farmer in {profile.get('district', 'Tamil Nadu')}.
+- They grow: {', '.join(profile.get('crops', [])) or 'various crops'}
+- Land size: {profile.get('land_size_acres', 'unknown')} Acres
+- Farming type: {profile.get('farming_type', 'conventional')}
+- Irrigation source: {profile.get('irrigation', 'unknown')}
+
+Help them with:
+- Price trends for their specific crops
+- Pest and disease identification and control
+- Irrigation and fertilizer guidance based on their farming type
+- Seasonal crop recommendations for their district
+- When is the best time to sell their produce"""
+    else:
+        role_context = f"""You are a personalized market assistant for {username}, a commodity dealer in {profile.get('district', 'Tamil Nadu')}.
+- Business type: {profile.get('business_type', 'trader')}
+- Market location: {profile.get('market_location', 'Tamil Nadu')}
+- Commodities traded: {', '.join(profile.get('commodities', [])) or 'various commodities'}
+- Trading volume: {profile.get('trading_volume', 'medium')} scale
+
+Help them with:
+- Price trends for their specific commodities
+- Best times to buy and sell based on market predictions
+- Market strategy and demand forecasting
+- Regional price variations across Tamil Nadu markets"""
+
+    return f"""{role_context}
+
+ALSO use this website knowledge to answer platform-related questions:
+{WEBSITE_INFO_STR}
+
+Rules:
+- Always personalize to their crops or commodities.
+- Be practical, concise, and data-driven.
+- Respond in the language preferred by the user.
+- Keep responses clear and actionable for field use.
+"""
+
 
 def initialize_gemini():
     global gemini_client
@@ -99,6 +161,7 @@ initialize_gemini()
 
 @app.route("/api/chat", methods=["POST"])
 def chat():
+    """Floating chatbot — website guide ONLY. No login required."""
     try:
         if not gemini_client:
             return jsonify({"error": "Gemini not initialized"}), 500
@@ -110,11 +173,84 @@ def chat():
         if not user_message:
             return jsonify({"error": "Message is required"}), 400
 
-        # First message → inject system prompt
+        # First message → inject website-only system prompt
         if not history:
+            system_prompt = build_float_system_prompt()
             history.append({
                 "role": "user",
-                "parts": [{"text": SYSTEM_PROMPT}]
+                "parts": [{"text": system_prompt}]
+            })
+            history.append({
+                "role": "model",
+                "parts": [{"text": "Understood! I'm ready to help."}]
+            })
+
+        history.append({
+            "role": "user",
+            "parts": [{"text": user_message}]
+        })
+
+        response = gemini_client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=history
+        )
+
+        history.append({
+            "role": "model",
+            "parts": [{"text": response.text}]
+        })
+
+        return jsonify({
+            "reply": response.text,
+            "history": history
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/assistant-chat", methods=["POST"])
+def assistant_chat():
+    """Dedicated AI Assistant page — deeply personalized using user profile from DB."""
+    try:
+        if not gemini_client:
+            return jsonify({"error": "Gemini not initialized"}), 500
+
+        username = session.get("user")
+        if not username:
+            # Fallback: accept username from request body (for cross-origin session issues)
+            body = request.get_json(silent=True) or {}
+            username = body.get("username") or request.args.get("username")
+        if not username:
+            return jsonify({"error": "Not authenticated"}), 401
+
+        data = request.get_json()
+        user_message = data.get("message")
+        history = data.get("history", [])
+
+        if not user_message:
+            return jsonify({"error": "Message is required"}), 400
+
+        # Fetch user profile from MongoDB
+        user_doc = users_collection.find_one({"username": username}, {"_id": 0})
+        if not user_doc or not user_doc.get("profile_complete"):
+            return jsonify({"error": "Profile not complete. Please complete your profile setup."}), 403
+
+        user_profile = {
+            "username": username,
+            "role": user_doc.get("role", "farmer"),
+            "profile": user_doc.get("profile", {})
+        }
+
+        if not history:
+            system_prompt = build_assistant_system_prompt(user_profile)
+            history.append({
+                "role": "user",
+                "parts": [{"text": system_prompt}]
+            })
+            history.append({
+                "role": "model",
+                "parts": [{"text": "Understood! I'm ready to assist you."}]
             })
 
         history.append({
@@ -315,6 +451,99 @@ def detect_disease():
         "ai_explanation": ai_explanation
     })
     
+
+# Profile Setup & Get Routes
+
+TN_DISTRICTS = [
+    "Ariyalur", "Chengalpattu", "Chennai", "Coimbatore", "Cuddalore",
+    "Dharmapuri", "Dindigul", "Erode", "Kallakurichi", "Kanchipuram",
+    "Kanyakumari", "Karur", "Krishnagiri", "Madurai", "Mayiladuthurai",
+    "Nagapattinam", "Namakkal", "Nilgiris", "Perambalur", "Pudukkottai",
+    "Ramanathapuram", "Ranipet", "Salem", "Sivaganga", "Tenkasi",
+    "Thanjavur", "Theni", "Thoothukudi", "Tiruchirappalli", "Tirunelveli",
+    "Tirupathur", "Tiruppur", "Tiruvallur", "Tiruvannamalai", "Tiruvarur",
+    "Vellore", "Villupuram", "Virudhunagar"
+]
+
+TN_MARKETS = [
+    "Chennai - Koyambedu", "Coimbatore - Ukkadam", "Madurai - Mattuthavani",
+    "Salem - Kondampatti", "Tiruchirappalli - Ariyamangalam", "Tirunelveli",
+    "Vellore", "Erode", "Namakkal", "Dindigul", "Thanjavur", "Cuddalore",
+    "Dharmapuri", "Krishnagiri", "Villupuram"
+]
+
+
+@app.route('/profile/setup', methods=['POST'])
+def profile_setup():
+    try:
+        username = session.get("user")
+        # Also support username passed in body (for right-after-signup flow)
+        data = request.get_json()
+        if not username:
+            username = data.get("username")
+        if not username:
+            return jsonify({"error": "Not authenticated"}), 401
+
+        role = data.get("role")
+        profile_data = data.get("profile", {})
+
+        if not role or role not in ["farmer", "dealer"]:
+            return jsonify({"error": "Invalid role. Must be 'farmer' or 'dealer'."}), 400
+
+        # Validate required fields
+        if not profile_data.get("district"):
+            return jsonify({"error": "District is required."}), 400
+
+        users_collection.update_one(
+            {"username": username},
+            {"$set": {
+                "role": role,
+                "profile": profile_data,
+                "profile_complete": True
+            }}
+        )
+
+        return jsonify({"message": "Profile saved successfully", "profile_complete": True}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/profile/get', methods=['GET'])
+def profile_get():
+    try:
+        username = session.get("user")
+        if not username:
+            # Fallback: accept username from query string (for cross-origin session issues)
+            username = request.args.get("username")
+        if not username:
+            return jsonify({"error": "Not authenticated"}), 401
+
+        user_doc = users_collection.find_one({"username": username}, {"_id": 0, "password": 0})
+        if not user_doc:
+            return jsonify({"error": "User not found"}), 404
+
+        return jsonify({
+            "username": username,
+            "email": user_doc.get("email", ""),
+            "role": user_doc.get("role", None),
+            "profile": user_doc.get("profile", {}),
+            "profile_complete": user_doc.get("profile_complete", False)
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/profile/meta', methods=['GET'])
+def profile_meta():
+    """Returns dropdown data for profile setup form."""
+    return jsonify({
+        "districts": TN_DISTRICTS,
+        "markets": TN_MARKETS,
+        "commodities": sorted(list(VALID_COMMODITIES))
+    }), 200
+
 
 # Signup/Login routes (already present)
 @app.route('/signup', methods=['POST'])

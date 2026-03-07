@@ -1,20 +1,45 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+import ReactMarkdown from 'react-markdown';
 
 const ChatAssistant = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState('English');
+    const [showChips, setShowChips] = useState(true);
     const [messages, setMessages] = useState([
-        { sender: 'bot', text: 'Hi! I am your AI-Assistant. How can I help you with PANDAM VILAI today?' }
+        { sender: 'bot', text: '👋 Hi! I am your **PANDAM VILAI** guide.\n\nI can help you learn about this website and navigate its features. Ask me anything!' }
     ]);
-    const [chatHistory, setChatHistory] = useState([]); 
+    const [chatHistory, setChatHistory] = useState([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
-    const [isListening, setIsListening] = useState(false); 
+    const [isListening, setIsListening] = useState(false);
     const messagesEndRef = useRef(null);
-    const recognitionRef = useRef(null); 
+    const recognitionRef = useRef(null);
+
+    const QUICK_CHIPS = [
+        '🌐 What can this website do?',
+        '📈 How do I predict prices?',
+        '🌿 How does disease detection work?',
+    ];
 
     useEffect(() => {
+        // Inject compact markdown styles for the chat window
+        const styleId = 'chat-md-style';
+        if (!document.getElementById(styleId)) {
+            const style = document.createElement('style');
+            style.id = styleId;
+            style.textContent = `
+                .chat-md p { margin: 0 0 4px; }
+                .chat-md p:last-child { margin-bottom: 0; }
+                .chat-md ul, .chat-md ol { margin: 2px 0 4px; padding-left: 16px; }
+                .chat-md li { margin-bottom: 2px; }
+                .chat-md h1,.chat-md h2,.chat-md h3 { margin: 4px 0 2px; font-size: 13px; }
+                .chat-md strong { font-weight: 700; }
+                .chat-md code { background: #f3f4f6; padding: 1px 4px; border-radius: 3px; font-size: 12px; }
+            `;
+            document.head.appendChild(style);
+        }
+
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRecognition) {
             recognitionRef.current = new SpeechRecognition();
@@ -23,9 +48,7 @@ const ChatAssistant = () => {
 
             const langMap = {
                 'English': 'en-US',
-                'Tamil': 'ta-IN',
-                'Hindi': 'hi-IN',
-                'Malayalam': 'ml-IN'
+                'Tamil': 'ta-IN'
             };
             recognitionRef.current.lang = langMap[selectedLanguage] || 'en-US';
 
@@ -66,32 +89,34 @@ const ChatAssistant = () => {
 
     useEffect(scrollToBottom, [messages, loading]);
 
-    const handleSend = async () => {
-        if (!input.trim()) return;
+    const handleSend = async (chipText) => {
+        const msg = chipText || input;
+        if (!msg.trim()) return;
 
-        const messageWithLanguage = `[Language: ${selectedLanguage}] ${input}`;
-        const userMsg = { sender: 'user', text: input };
-        
+        const messageWithLanguage = `[Language: ${selectedLanguage}] ${msg}`;
+        const userMsg = { sender: 'user', text: msg };
+
         setMessages(prev => [...prev, userMsg]);
         setInput('');
         setLoading(true);
+        setShowChips(false);
 
         try {
-            const res = await axios.post('http://127.0.0.1:5000/api/chat', { 
-                message: messageWithLanguage, 
-                history: chatHistory 
+            const res = await axios.post('http://127.0.0.1:5000/api/chat', {
+                message: messageWithLanguage,
+                history: chatHistory
             });
 
             if (res.data && res.data.reply) {
                 const botMsg = { sender: 'bot', text: res.data.reply };
                 setMessages(prev => [...prev, botMsg]);
-                setChatHistory(res.data.history); 
+                setChatHistory(res.data.history);
             }
         } catch (error) {
             console.error("API Error:", error);
-            setMessages(prev => [...prev, { 
-                sender: 'bot', 
-                text: "Sorry, I'm having trouble connecting to the server. Please ensure the backend is running." 
+            setMessages(prev => [...prev, {
+                sender: 'bot',
+                text: "Sorry, I'm having trouble connecting to the server. Please ensure the backend is running."
             }]);
         } finally {
             setLoading(false);
@@ -102,9 +127,14 @@ const ChatAssistant = () => {
         if (e.key === 'Enter') handleSend();
     };
 
+    const handleOpen = () => {
+        setIsOpen(!isOpen);
+        if (!isOpen) setShowChips(true); // reset chips each time opened
+    };
+
     return (
         <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 1000, fontFamily: 'Arial, sans-serif' }}>
-            
+
             {isOpen && (
                 <div className="chat-window shadow" style={{
                     width: '320px', // Fixed small width
@@ -123,27 +153,25 @@ const ChatAssistant = () => {
                     <div style={{ background: '#059669', color: 'white', padding: '12px 15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <div style={{ width: '28px', height: '28px', borderRadius: '50%', overflow: 'hidden', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <img 
-                                    src="/static/content/ai_logo.jpg" 
+                                <img
+                                    src="/static/content/ai_logo.jpg"
                                     alt="AI"
                                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                     onError={(e) => {
-                                        e.target.style.display='none'; 
-                                        e.target.parentNode.innerHTML = '🌱'; 
+                                        e.target.style.display = 'none';
+                                        e.target.parentNode.innerHTML = '🌱';
                                     }}
                                 />
                             </div>
                             <div>
-                                <h4 style={{ margin: 0, fontSize: '13px', fontWeight: '600' }}>Agri-Assistant</h4>
-                                <select 
-                                    value={selectedLanguage} 
+                                <h4 style={{ margin: 0, fontSize: '13px', fontWeight: '700' }}>PANDAM VILAI Guide</h4>
+                                <select
+                                    value={selectedLanguage}
                                     onChange={(e) => setSelectedLanguage(e.target.value)}
                                     style={{ background: 'transparent', color: 'white', border: 'none', fontSize: '10px', cursor: 'pointer', outline: 'none', opacity: '0.9' }}
                                 >
-                                    <option value="English" style={{color: 'black'}}>English</option>
-                                    <option value="Tamil" style={{color: 'black'}}>Tamil</option>
-                                    <option value="Hindi" style={{color: 'black'}}>Hindi</option>
-                                    <option value="Malayalam" style={{color: 'black'}}>Malayalam</option>
+                                    <option value="English" style={{ color: 'black' }}>English</option>
+                                    <option value="Tamil" style={{ color: 'black' }}>Tamil</option>
                                 </select>
                             </div>
                         </div>
@@ -161,37 +189,59 @@ const ChatAssistant = () => {
                                     border: msg.sender === 'bot' ? '1px solid #e5e7eb' : 'none',
                                     maxWidth: '85%',
                                     fontSize: '13px',
-                                    lineHeight: '1.4',
-                                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                                    lineHeight: '1.5',
+                                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
                                 }}>
-                                    {msg.text}
+                                    {msg.sender === 'bot'
+                                        ? <div className="chat-md"><ReactMarkdown>{msg.text}</ReactMarkdown></div>
+                                        : msg.text
+                                    }
                                 </div>
                             </div>
                         ))}
                         {loading && <div style={{ marginLeft: '10px', fontSize: '11px', color: '#9ca3af' }}>Thinking...</div>}
+
+                        {/* Quick-start chip suggestions */}
+                        {showChips && messages.length === 1 && (
+                            <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                <p style={{ fontSize: '11px', color: '#9ca3af', margin: '0 0 4px', fontWeight: '600' }}>Quick questions:</p>
+                                {QUICK_CHIPS.map((chip, i) => (
+                                    <button key={i} onClick={() => handleSend(chip)} style={{
+                                        background: 'white', border: '1.5px solid #059669', color: '#059669',
+                                        borderRadius: '16px', padding: '6px 12px', fontSize: '12px',
+                                        fontWeight: '600', cursor: 'pointer', textAlign: 'left',
+                                        transition: 'all 0.18s',
+                                    }}>
+                                        {chip}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
                         <div ref={messagesEndRef} />
                     </div>
 
                     <div style={{ padding: '12px', background: 'white', borderTop: '1px solid #f3f4f6', display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        <button 
+                        <button
                             onClick={toggleListening}
-                            style={{ 
-                                background: isListening ? '#ef4444' : '#f3f4f6', 
-                                color: isListening ? 'white' : '#6b7280',
-                                border: 'none', 
-                                borderRadius: '50%', 
-                                width: '32px', height: '32px', 
+                            style={{
+                                background: isListening ? '#ef4444' : '#059669',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '50%',
+                                width: '32px', height: '32px',
                                 cursor: 'pointer',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontSize: '14px', transition: 'all 0.2s', flexShrink: 0
+                                fontSize: '14px', transition: 'all 0.2s', flexShrink: 0,
+                                boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
                             }}
                         >
-                            {isListening ? '⏹️' :'🎙️'}
+                            {isListening ? '⏹️' : '🎙️'}
                         </button>
 
-                        <input 
-                            type="text" 
-                            value={input} 
+                        <input
+                            type="text"
+                            value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={handleKeyDown}
                             placeholder="Type a message..."
@@ -204,8 +254,8 @@ const ChatAssistant = () => {
                 </div>
             )}
 
-            <button 
-                onClick={() => setIsOpen(!isOpen)} 
+            <button
+                onClick={handleOpen}
                 style={{
                     width: '56px', height: '56px',
                     borderRadius: '50%',
@@ -214,14 +264,14 @@ const ChatAssistant = () => {
                     boxShadow: '0 4px 15px rgba(5, 150, 105, 0.3)',
                     cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    overflow: 'hidden', padding: 0 
+                    overflow: 'hidden', padding: 0
                 }}
             >
                 {isOpen ? (
                     <span style={{ color: 'white', fontSize: '24px' }}>×</span>
                 ) : (
-                    <img 
-                        src="/static/content/ai_logo.jpg" 
+                    <img
+                        src="/static/content/ai_logo.jpg"
                         alt="AI"
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         onError={(e) => {
