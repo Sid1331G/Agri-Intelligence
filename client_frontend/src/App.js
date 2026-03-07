@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, NavLink, Link, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, NavLink, Link, Navigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 // Component Imports
@@ -355,11 +355,18 @@ function App() {
           </Routes>
         </main>
 
-        {/* Floating chatbot — always visible, no login required, website guide only */}
-        <ChatAssistant />
+        {/* Floating chatbot — hidden on AI Assistant page */}
+        <FloatingChat />
       </div>
     </Router>
   );
 }
+
+/* Wrapper using useLocation — must be inside Router */
+const FloatingChat = () => {
+  const location = useLocation();
+  if (location.pathname === '/assistant') return null;
+  return <ChatAssistant />;
+};
 
 export default App;

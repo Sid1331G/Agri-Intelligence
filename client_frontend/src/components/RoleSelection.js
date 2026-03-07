@@ -7,109 +7,77 @@ const injectStyles = () => {
     const el = document.createElement('style');
     el.id = id;
     el.textContent = `
+        html, body {
+            overflow: hidden !important;
+            height: 100% !important;
+        }
+
         /* ── Tablet ≤ 768px ── */
         @media (max-width: 768px) {
             .role-page {
-                padding: 24px 16px !important;
-                min-height: 100dvh !important;
+                padding-top: 0 !important;
+                padding-left: 16px !important;
+                padding-right: 16px !important;
             }
-            .role-header {
-                margin-bottom: 28px !important;
+            .role-title { font-size: 26px !important; }
+            .role-cards-row { gap: 12px !important; }
+            .role-card {
+                flex: 0 0 270px !important;
+                width: 270px !important;
+                padding: 22px 18px 20px !important;
             }
-            .role-title {
-                font-size: 28px !important;
+        }
+
+        /* ── Phone ≤ 580px — stack vertically ── */
+        @media (max-width: 580px) {
+            .role-page {
+                padding-top: 0 !important;
             }
             .role-cards-row {
-                gap: 14px !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 10px !important;
             }
             .role-card {
-                min-width: 240px !important;
-                padding: 26px 20px !important;
+                flex: unset !important;
+                width: 100% !important;
+                max-width: 380px !important;
+                padding: 18px 16px 16px !important;
+                border-radius: 14px !important;
+            }
+            .role-continue-btn {
+                width: 100% !important;
+                max-width: 380px !important;
             }
         }
 
         /* ── Phone ≤ 480px ── */
         @media (max-width: 480px) {
             .role-page {
-                padding: 16px 12px calc(16px + env(safe-area-inset-bottom)) !important;
-                align-items: flex-start !important;
-                padding-top: calc(20px + env(safe-area-inset-top)) !important;
+                padding-top: 0 !important;
+                padding-left: 14px !important;
+                padding-right: 14px !important;
+                padding-bottom: 0 !important;
             }
-            .role-header {
-                margin-bottom: 22px !important;
-            }
-            .role-step-badge {
-                font-size: 10px !important;
-                padding: 4px 12px !important;
-                margin-bottom: 12px !important;
-            }
-            .role-title {
-                font-size: 24px !important;
-                letter-spacing: -0.3px !important;
-            }
-            .role-subtitle {
-                font-size: 13px !important;
-            }
-            /* Cards stack full-width on phone */
-            .role-cards-row {
-                flex-direction: column !important;
-                gap: 12px !important;
-                margin-bottom: 24px !important;
-            }
-            .role-card {
-                min-width: 0 !important;
-                max-width: 100% !important;
-                width: 100% !important;
-                padding: 22px 18px !important;
-                border-radius: 16px !important;
-                /* Compact: hide description text, keep features */
-            }
-            .role-card-icon-circle {
-                width: 58px !important;
-                height: 58px !important;
-                margin-bottom: 12px !important;
-            }
-            .role-card-icon-circle span {
-                font-size: 30px !important;
-            }
-            .role-card-title {
-                font-size: 18px !important;
-            }
-            .role-card-subtitle {
-                font-size: 12px !important;
-                margin-bottom: 10px !important;
-            }
-            .role-card-desc {
-                font-size: 12px !important;
-                margin-bottom: 14px !important;
-            }
-            .role-feature-item {
-                font-size: 12px !important;
-            }
-            .role-select-indicator {
-                padding: 8px !important;
-                font-size: 12px !important;
-            }
-            .role-continue-btn {
-                padding: 13px 28px !important;
-                font-size: 14px !important;
-                border-radius: 11px !important;
-                width: 100% !important;
-                touch-action: manipulation !important;
-            }
-            .role-footer-note {
-                font-size: 11px !important;
-            }
+            .role-header { margin-bottom: 16px !important; }
+            .role-step-badge  { font-size: 10px !important; padding: 4px 12px !important; margin-bottom: 8px !important; }
+            .role-title       { font-size: 22px !important; }
+            .role-subtitle    { font-size: 13px !important; }
+            .role-card-icon-circle { width: 44px !important; height: 44px !important; margin-bottom: 8px !important; }
+            .role-card-icon-circle span { font-size: 22px !important; }
+            .role-card-title  { font-size: 17px !important; }
+            .role-card-subtitle { font-size: 11px !important; }
+            .role-card-desc   { font-size: 12px !important; margin-bottom: 12px !important; }
+            .role-select-indicator { padding: 8px !important; font-size: 12px !important; }
+            .role-continue-btn { padding: 12px 24px !important; font-size: 14px !important; touch-action: manipulation !important; margin-bottom: 8px !important; }
+            .role-footer-note { font-size: 11px !important; }
+            .role-cards-row   { margin-bottom: 20px !important; }
         }
 
         /* ── Very small ≤ 360px ── */
         @media (max-width: 360px) {
-            .role-card {
-                padding: 18px 14px !important;
-            }
-            .role-title {
-                font-size: 21px !important;
-            }
+            .role-title { font-size: 20px !important; }
+            .role-card  { padding: 14px 12px 12px !important; }
         }
     `;
     document.head.appendChild(el);
@@ -156,7 +124,7 @@ const RoleSelection = ({ onRoleSelect }) => {
                     </span>
                     <h1 className="role-title" style={s.title}>Who are you?</h1>
                     <p className="role-subtitle" style={s.subtitle}>
-                        Select your role so we can personalize your PANDAM VILAI experience.
+                        Select your role so we can personalize your experience.
                     </p>
                 </div>
 
@@ -198,15 +166,6 @@ const RoleSelection = ({ onRoleSelect }) => {
                                 <p className="role-card-subtitle" style={s.roleSubtitle}>{role.subtitle}</p>
                                 <p className="role-card-desc" style={s.roleDesc}>{role.description}</p>
 
-                                <ul style={s.featureList}>
-                                    {role.features.map((f, i) => (
-                                        <li key={i} className="role-feature-item" style={s.featureItem}>
-                                            <span style={{ ...s.featureDot, background: role.accent }} />
-                                            {f}
-                                        </li>
-                                    ))}
-                                </ul>
-
                                 <div className="role-select-indicator" style={{
                                     ...s.selectIndicator,
                                     background: isSel ? role.accent : 'transparent',
@@ -247,21 +206,30 @@ const RoleSelection = ({ onRoleSelect }) => {
 
 const s = {
     page: {
-        minHeight: '100dvh',
+        height: '100dvh',
+        overflow: 'hidden',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '32px 16px',
+        paddingTop: '0',
+        paddingBottom: '0',
+        paddingLeft: '20px',
+        paddingRight: '20px',
         background: 'linear-gradient(160deg, #061510 0%, #081c14 100%)',
         boxSizing: 'border-box',
     },
     container: {
         width: '100%',
-        maxWidth: '860px',
+        maxWidth: '660px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
     },
     header: {
         textAlign: 'center',
-        marginBottom: '40px',
+        marginBottom: '28px',
+        width: '100%',
     },
     stepBadge: {
         display: 'inline-flex',
@@ -272,11 +240,11 @@ const s = {
         color: '#6ee7b7',
         fontWeight: '700',
         fontSize: '11px',
-        padding: '5px 14px',
+        padding: '2px 14px',
         borderRadius: '20px',
         letterSpacing: '0.8px',
         textTransform: 'uppercase',
-        marginBottom: '16px',
+        marginBottom: '12px',
     },
     stepDot: {
         width: '6px', height: '6px',
@@ -290,7 +258,7 @@ const s = {
         fontSize: 'clamp(24px, 4vw, 42px)',
         fontWeight: '800',
         color: '#e8f5f0',
-        margin: '0 0 10px',
+        margin: '65px 0 6px',
         letterSpacing: '-0.5px',
     },
     subtitle: {
@@ -301,17 +269,17 @@ const s = {
     },
     cardsRow: {
         display: 'flex',
-        gap: '20px',
+        gap: '16px',
         justifyContent: 'center',
-        flexWrap: 'wrap',
-        marginBottom: '36px',
+        flexWrap: 'nowrap',
+        marginBottom: '28px',
+        width: '100%',
     },
     card: {
-        flex: '1',
-        minWidth: '280px',
-        maxWidth: '390px',
-        borderRadius: '20px',
-        padding: '32px 26px',
+        flex: '0 0 300px',
+        width: '300px',
+        borderRadius: '18px',
+        padding: '22px 22px 20px',
         cursor: 'pointer',
         transition: 'all 0.22s ease',
         position: 'relative',
@@ -329,49 +297,28 @@ const s = {
         fontSize: '13px', fontWeight: '800',
     },
     iconCircle: {
-        width: '72px', height: '72px',
+        width: '56px', height: '56px',
         borderRadius: '50%',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        marginBottom: '18px',
+        marginBottom: '12px',
     },
     roleTitle: {
         fontFamily: "'Syne', sans-serif",
-        fontSize: '22px',
+        fontSize: '20px',
         fontWeight: '800',
-        margin: '0 0 5px',
+        margin: '0 0 4px',
     },
     roleSubtitle: {
-        fontSize: '13px',
+        fontSize: '12px',
         color: '#4d7a65',
-        margin: '0 0 14px',
+        margin: '0 0 8px',
         fontWeight: '500',
     },
     roleDesc: {
-        fontSize: '13px',
+        fontSize: '12.5px',
         color: '#7aab93',
-        lineHeight: '1.65',
-        margin: '0 0 18px',
-    },
-    featureList: {
-        listStyle: 'none',
-        padding: 0,
-        margin: '0 0 22px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '8px',
-    },
-    featureItem: {
-        fontSize: '13px',
-        color: '#8fbfaa',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-        fontWeight: '500',
-    },
-    featureDot: {
-        width: '5px', height: '5px',
-        borderRadius: '50%',
-        flexShrink: 0,
+        lineHeight: '1.6',
+        margin: '0 0 16px',
     },
     selectIndicator: {
         textAlign: 'center',
@@ -385,6 +332,7 @@ const s = {
     },
     footer: {
         textAlign: 'center',
+        width: '100%',
     },
     continueBtn: {
         padding: '14px 44px',
@@ -396,7 +344,7 @@ const s = {
         fontFamily: "'DM Sans', sans-serif",
         letterSpacing: '0.3px',
         transition: 'all 0.22s ease',
-        marginBottom: '12px',
+        marginBottom: '10px',
         display: 'inline-block',
     },
     footerNote: {

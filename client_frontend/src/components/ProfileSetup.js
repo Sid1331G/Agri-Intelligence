@@ -15,6 +15,12 @@ const injectStyles = () => {
     el.textContent = `
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        /* ── Re-enable scrolling for this page ── */
+        html, body {
+            overflow: auto !important;
+            height: auto !important;
+        }
+
         /* Focus states */
         .ps-select:focus, .ps-input:focus {
             border-color: rgba(52,211,153,0.5) !important;
@@ -24,26 +30,24 @@ const injectStyles = () => {
         /* ── Tablet ≤ 768px ── */
         @media (max-width: 768px) {
             .ps-page {
-                padding: 24px 14px 48px !important;
-                min-height: 100dvh !important;
+                top: 58px !important;
             }
             .ps-card {
                 padding: 26px 22px !important;
                 border-radius: 18px !important;
             }
             .ps-title {
-                font-size: 24px !important;
+                font-size: 20px !important;
             }
         }
 
         /* ── Phone ≤ 480px ── */
         @media (max-width: 480px) {
             .ps-page {
-                padding: 14px 10px calc(32px + env(safe-area-inset-bottom)) !important;
-                padding-top: calc(14px + env(safe-area-inset-top)) !important;
+                top: 58px !important;
             }
             .ps-header {
-                margin-bottom: 18px !important;
+                padding: 14px 14px 12px !important;
             }
             .ps-step-badge {
                 font-size: 10px !important;
@@ -57,7 +61,6 @@ const injectStyles = () => {
                 font-size: 12px !important;
             }
             .ps-card {
-                padding: 20px 16px !important;
                 border-radius: 16px !important;
                 gap: 20px !important;
             }
@@ -100,7 +103,7 @@ const injectStyles = () => {
                 padding: 16px 12px !important;
             }
             .ps-title {
-                font-size: 18px !important;
+                font-size: 15px !important;
             }
             .ps-chip {
                 font-size: 10px !important;
@@ -281,9 +284,9 @@ const ProfileSetup = ({ role, username, onComplete, isEditMode = false }) => {
 
     return (
         <div className="ps-page" style={s.page}>
-            <form onSubmit={handleSubmit} style={s.container}>
+            <div style={s.container}>
 
-                {/* Header */}
+                {/* Fixed Header — title + subtitle stay put */}
                 <div className="ps-header" style={s.header}>
                     <span className="ps-step-badge" style={{ ...s.stepBadge, color: accent, borderColor: accentBorder, background: accentDim }}>
                         <span style={{ ...s.stepDot, background: accent, boxShadow: `0 0 6px ${accent}` }} />
@@ -299,7 +302,9 @@ const ProfileSetup = ({ role, username, onComplete, isEditMode = false }) => {
                     </p>
                 </div>
 
-                {/* Form card */}
+                {/* Scrollable form body */}
+                <div style={s.scrollBody}>
+                <form onSubmit={handleSubmit} style={{ width: '100%', paddingTop: '24px' }}>
                 <div className="ps-card" style={s.card}>
 
                     {error && (
@@ -494,8 +499,10 @@ const ProfileSetup = ({ role, username, onComplete, isEditMode = false }) => {
                             <span>{isEditMode ? '✅ Update Profile' : 'Complete Setup & Go to Dashboard →'}</span>
                         )}
                     </button>
-                </div>
+                </div>{/* ps-card */}
             </form>
+            </div>{/* scrollBody */}
+            </div>{/* container */}
         </div>
     );
 };
@@ -503,17 +510,32 @@ const ProfileSetup = ({ role, username, onComplete, isEditMode = false }) => {
 /* ── Static styles ── */
 const s = {
     page: {
-        minHeight: '100dvh',
+        position: 'fixed',
+        top: '115px',
+        left: 0,
+        right: 0,
+        bottom: 0,
         display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        padding: '36px 16px 64px',
+        flexDirection: 'column',
+        alignItems: 'center',
         background: 'linear-gradient(160deg, #061510 0%, #081c14 100%)',
         boxSizing: 'border-box',
+        overflow: 'hidden',
     },
     container: {
         width: '100%',
         maxWidth: '800px',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        overflow: 'hidden',
+    },
+    scrollBody: {
+        flex: 1,
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        padding: '0 16px calc(48px + env(safe-area-inset-bottom))',
+        boxSizing: 'border-box',
     },
     loadingBox: {
         display: 'flex', flexDirection: 'column',
@@ -529,7 +551,12 @@ const s = {
     },
     header: {
         textAlign: 'center',
-        marginBottom: '28px',
+        padding: '20px 16px 16px',
+        flexShrink: 0,
+        background: 'linear-gradient(160deg, #061510 0%, #081c14 100%)',
+        borderBottom: '1px solid rgba(255,255,255,0.05)',
+        width: '100%',
+        boxSizing: 'border-box',
     },
     stepBadge: {
         display: 'inline-flex',
@@ -550,11 +577,11 @@ const s = {
     },
     title: {
         fontFamily: "'Syne', sans-serif",
-        fontSize: 'clamp(20px, 3vw, 32px)',
-        fontWeight: '800',
+        fontSize: 'clamp(18px, 2.2vw, 24px)',
+        fontWeight: '600',
         color: '#e8f5f0',
-        margin: '0 0 8px',
-        letterSpacing: '-0.4px',
+        margin: '0 0 6px',
+        letterSpacing: '-0.2px',
     },
     subtitle: {
         fontSize: '14px', color: '#4d7a65',
@@ -562,10 +589,10 @@ const s = {
     },
     card: {
         background: '#0a1f18',
-        border: '1px solid rgba(255,255,255,0.07)',
+        border: '30px solid rgba(255,255,255,0.07)',
         borderRadius: '20px',
         boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-        padding: '32px 28px',
+        padding: '30px 28px',
         display: 'flex', flexDirection: 'column',
         gap: '24px',
         boxSizing: 'border-box',

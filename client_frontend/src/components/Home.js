@@ -182,13 +182,13 @@ const s = {
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
         minHeight: '100vh',
-        paddingTop: '58px',          /* offset for fixed navbar */
+        paddingTop: '-25px',          /* offset for fixed navbar */
         background: 'linear-gradient(160deg, #061510 0%, #081c14 100%)',
     },
 
     /* Left */
     heroLeft: {
-        padding: '60px 48px 60px 52px',
+        padding: '0px 48px 60px 20px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
