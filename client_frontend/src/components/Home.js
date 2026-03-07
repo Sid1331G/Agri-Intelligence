@@ -181,7 +181,8 @@ const s = {
     heroSection: {
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
-        minHeight: 'calc(100vh - 58px)',
+        minHeight: '100vh',
+        paddingTop: '58px',          /* offset for fixed navbar */
         background: 'linear-gradient(160deg, #061510 0%, #081c14 100%)',
     },
 
