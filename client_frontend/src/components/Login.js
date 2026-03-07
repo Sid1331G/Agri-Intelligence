@@ -158,7 +158,7 @@ const Login = ({ setUser }) => {
                             onError={e => { e.target.style.display = 'none'; e.target.parentNode.innerHTML = '🌱'; }} />
                     </div>
                     <div>
-                        <h1 className="login-brand-title" style={s.brandTitle}>PANDAM VILAI</h1>
+                        <h1 className="login-brand-title" style={s.brandTitle}>Agri-Intelligence</h1>
                         <p className="login-brand-sub" style={s.brandSub}>Agricultural Price Intelligence</p>
                     </div>
                 </div>
