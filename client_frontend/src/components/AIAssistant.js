@@ -57,11 +57,15 @@ const injectStyles = () => {
         ───────────────────────────────────── */
         @media (max-width: 768px) {
             .ai-page {
+                position: fixed !important;
+                top: var(--navbar-h, 58px) !important;
+                left: 0 !important; right: 0 !important; bottom: 0 !important;
                 flex-direction: column !important;
-                height: 100dvh !important;
-                padding: 10px 10px 0 !important;
+                padding: 8px 8px 0 !important;
                 gap: 8px !important;
                 overflow: hidden !important;
+                height: auto !important;
+                margin: 0 !important;
             }
             .ai-sidebar {
                 width: 100% !important;
@@ -101,8 +105,13 @@ const injectStyles = () => {
         ───────────────────────────────────── */
         @media (max-width: 480px) {
             .ai-page {
+                position: fixed !important;
+                top: var(--navbar-h, 58px) !important;
+                left: 0 !important; right: 0 !important; bottom: 0 !important;
                 padding: 0 !important;
                 gap: 0 !important;
+                height: auto !important;
+                margin: 0 !important;
                 background: #061510 !important;
             }
 
@@ -400,7 +409,7 @@ const AIAssistant = () => {
 
                     <div className="profile-avatar"
                          style={{ ...s.roleAvatar, background: accentDim, border:`1px solid ${accentBorder}` }}>
-                        <span style={{ fontSize:'30px' }}>{isFarmer ? '🌾' : '🏪'}</span>
+                        <span style={{ fontSize:'22px' }}>{isFarmer ? '🌾' : '🏪'}</span>
                     </div>
 
                     <h3 className="profile-name" style={{ ...s.profileName, color: accent }}>
@@ -573,13 +582,15 @@ const AIAssistant = () => {
 /* ── Static styles ── */
 const s = {
     page: {
-        display: 'flex', gap: '16px',
-        height: '100dvh',
-        padding: '20px 20px 0',
+        position: 'fixed',
+        top: 'var(--navbar-h, 58px)',
+        left: 0, right: 0, bottom: 0,
+        display: 'flex', gap: '12px',
+        padding: '12px 16px 0',
         boxSizing: 'border-box',
-        maxWidth: '1300px', margin: '0 auto',
         fontFamily: "'DM Sans', sans-serif",
         overflow: 'hidden',
+        background: 'linear-gradient(160deg, #061510 0%, #081c14 100%)',
     },
     centerPage: {
         display: 'flex', flexDirection: 'column',
@@ -592,59 +603,59 @@ const s = {
         borderRadius: '50%', animation: 'spin 0.8s linear infinite',
     },
     sidebar: {
-        width: '252px', flexShrink: 0,
+        width: '210px', flexShrink: 0,
         display: 'flex', flexDirection: 'column',
-        gap: '10px', overflowY: 'auto', maxHeight: '100%',
+        gap: '8px', overflowY: 'auto', maxHeight: '100%',
     },
     profileCard: {
         background: '#0a1f18',
         border: '1px solid rgba(255,255,255,0.07)',
-        borderRadius: '18px', padding: '22px 16px',
+        borderRadius: '14px', padding: '14px 12px',
         display: 'flex', flexDirection: 'column',
-        alignItems: 'center', gap: '8px',
+        alignItems: 'center', gap: '6px',
     },
     roleAvatar: {
-        width: '60px', height: '60px', borderRadius: '50%',
+        width: '44px', height: '44px', borderRadius: '50%',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        marginBottom: '4px',
+        marginBottom: '2px',
     },
     profileName: {
         fontFamily: "'Syne', sans-serif",
-        fontSize: '17px', fontWeight: '800',
+        fontSize: '14px', fontWeight: '800',
         margin: 0, letterSpacing: '-0.2px',
     },
     roleBadge: {
-        fontSize: '11px', fontWeight: '700',
-        padding: '4px 12px', borderRadius: '12px', letterSpacing: '0.3px',
+        fontSize: '10px', fontWeight: '700',
+        padding: '3px 10px', borderRadius: '10px', letterSpacing: '0.3px',
     },
     divider: {
         width: '100%', height: '1px',
-        background: 'rgba(255,255,255,0.06)', margin: '4px 0',
+        background: 'rgba(255,255,255,0.06)', margin: '2px 0',
     },
     profileDetails: {
-        width: '100%', display: 'flex', flexDirection: 'column', gap: '12px',
+        width: '100%', display: 'flex', flexDirection: 'column', gap: '8px',
     },
     tagLabel: {
-        fontSize: '10px', color: '#2d5c47', fontWeight: '700',
-        textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '6px',
+        fontSize: '9px', color: '#2d5c47', fontWeight: '700',
+        textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '4px',
     },
-    tagGrid: { display: 'flex', flexWrap: 'wrap', gap: '5px' },
+    tagGrid: { display: 'flex', flexWrap: 'wrap', gap: '4px' },
     tag: {
-        fontSize: '11px', fontWeight: '600',
-        padding: '3px 9px', borderRadius: '10px', letterSpacing: '0.2px',
+        fontSize: '10px', fontWeight: '600',
+        padding: '2px 7px', borderRadius: '8px', letterSpacing: '0.2px',
     },
     langCard: {
         background: '#0a1f18',
         border: '1px solid rgba(255,255,255,0.07)',
-        borderRadius: '14px', padding: '14px 16px',
-        display: 'flex', flexDirection: 'column', gap: '8px', flexShrink: 0,
+        borderRadius: '12px', padding: '10px 12px',
+        display: 'flex', flexDirection: 'column', gap: '6px', flexShrink: 0,
     },
     langLabel: {
-        fontSize: '12px', fontWeight: '700', color: '#4d7a65', letterSpacing: '0.3px',
+        fontSize: '11px', fontWeight: '700', color: '#4d7a65', letterSpacing: '0.3px',
     },
     langSelect: {
-        width: '100%', padding: '8px 10px', borderRadius: '8px',
-        border: '1px solid rgba(255,255,255,0.08)', fontSize: '13px',
+        width: '100%', padding: '6px 8px', borderRadius: '7px',
+        border: '1px solid rgba(255,255,255,0.08)', fontSize: '12px',
         color: '#e8f5f0', background: '#061510', outline: 'none',
         fontFamily: "'DM Sans', sans-serif", cursor: 'pointer',
     },
@@ -657,23 +668,23 @@ const s = {
         boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
     },
     chatHeader: {
-        padding: '14px 22px', display: 'flex',
+        padding: '10px 16px', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         flexShrink: 0,
         background: 'linear-gradient(135deg, #0d2820, #061510)',
     },
-    chatHeaderLeft: { display: 'flex', alignItems: 'center', gap: '12px' },
+    chatHeaderLeft: { display: 'flex', alignItems: 'center', gap: '10px' },
     chatHeaderIcon: {
-        width: '40px', height: '40px', borderRadius: '12px',
+        width: '34px', height: '34px', borderRadius: '10px',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: '20px', flexShrink: 0,
+        fontSize: '17px', flexShrink: 0,
     },
     chatHeaderTitle: {
         fontFamily: "'Syne', sans-serif",
-        margin: 0, color: '#e8f5f0', fontSize: '16px',
+        margin: 0, color: '#e8f5f0', fontSize: '14px',
         fontWeight: '800', letterSpacing: '-0.2px',
     },
-    chatHeaderSub: { margin: 0, color: '#4d7a65', fontSize: '11px', letterSpacing: '0.2px' },
+    chatHeaderSub: { margin: 0, color: '#4d7a65', fontSize: '10px', letterSpacing: '0.2px' },
     onlineIndicator: {
         display: 'flex', alignItems: 'center', gap: '6px',
         color: '#4d7a65', fontSize: '11px', fontWeight: '700',
