@@ -18,52 +18,52 @@ const LoginRequired = ({ pageName }) => (
     display: 'flex', flexDirection: 'column',
     alignItems: 'center', justifyContent: 'center',
     minHeight: '70vh', textAlign: 'center', padding: '40px 20px',
+    background: 'linear-gradient(160deg, #061510, #081c14)',
   }}>
     <div style={{
-      background: 'rgba(255, 255, 255, 0.3)',
-      backdropFilter: 'blur(12px)',
+      background: '#0a1f18',
+      border: '1px solid rgba(52,211,153,0.18)',
       borderRadius: '20px',
       padding: '48px 40px',
       maxWidth: '420px', width: '100%',
-      boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
-      border: '1px solid rgba(255,255,255,0.7)',
+      boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+      fontFamily: "'DM Sans', sans-serif",
     }}>
-      {/* Lock icon */}
       <div style={{
-        width: '70px', height: '70px',
-        background: 'linear-gradient(135deg, #10b981, #059669)',
+        width: '66px', height: '66px',
+        background: 'rgba(52,211,153,0.1)',
+        border: '1px solid rgba(52,211,153,0.3)',
         borderRadius: '50%',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         margin: '0 auto 24px',
-        boxShadow: '0 8px 20px rgba(16,185,129,0.35)',
+        boxShadow: '0 0 20px rgba(52,211,153,0.15)',
       }}>
-        <i className="fas fa-lock" style={{ fontSize: '28px', color: 'white' }} />
+        <i className="fas fa-lock" style={{ fontSize: '26px', color: '#34d399' }} />
       </div>
 
-      <h2 style={{ margin: '0 0 10px', color: '#064e3b', fontSize: '22px', fontWeight: '800' }}>
+      <h2 style={{ margin: '0 0 10px', color: '#e8f5f0', fontSize: '22px', fontWeight: '800', fontFamily: "'Syne', sans-serif", letterSpacing: '-0.3px' }}>
         Login Required
       </h2>
-      <p style={{ margin: '0 0 28px', color: '#131416ff', fontSize: '15px', lineHeight: '1.6' }}>
-        You need to be logged in to access <strong style={{ color: '#006149ff' }}>{pageName}</strong>.
+      <p style={{ margin: '0 0 28px', color: '#7aab93', fontSize: '14px', lineHeight: '1.7' }}>
+        You need to be logged in to access{' '}
+        <strong style={{ color: '#34d399' }}>{pageName}</strong>.
         Please login to continue.
       </p>
 
       <Link
         to="/login"
         style={{
-          display: 'inline-block',
-          padding: '13px 36px',
-          background: 'linear-gradient(135deg, #10b981, #059669)',
+          display: 'inline-flex', alignItems: 'center', gap: '8px',
+          padding: '13px 32px',
+          background: '#1db87a',
           color: 'white', fontWeight: '700',
-          borderRadius: '12px', textDecoration: 'none',
-          fontSize: '15px', letterSpacing: '0.4px',
-          boxShadow: '0 6px 20px rgba(16,185,129,0.4)',
-          transition: 'transform 0.2s',
+          borderRadius: '10px', textDecoration: 'none',
+          fontSize: '14px', letterSpacing: '0.3px',
+          boxShadow: '0 6px 20px rgba(29,184,122,0.35)',
+          fontFamily: "'DM Sans', sans-serif",
         }}
-        onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-        onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
       >
-        <i className="fas fa-sign-in-alt" style={{ marginRight: '8px' }} />
+        <i className="fas fa-sign-in-alt" />
         Login Now
       </Link>
     </div>
@@ -158,44 +158,146 @@ function App() {
 
           {/* ACCOUNT MENU */}
           <div className="account-menu" style={{ marginLeft: 'auto', position: 'relative' }}>
-            <img
-              src="https://cdn-icons-png.flaticon.com/128/9069/9069049.png"
-              alt="Account"
-              style={{ width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', border: '2px solid white' }}
-              onClick={() => setShowAccountMenu(!showAccountMenu)}
-            />
 
+            {/* Avatar button */}
+            <button
+              onClick={() => setShowAccountMenu(!showAccountMenu)}
+              style={{
+                width: '38px', height: '38px',
+                borderRadius: '50%',
+                background: showAccountMenu
+                  ? 'rgba(52,211,153,0.2)'
+                  : 'rgba(52,211,153,0.1)',
+                border: `2px solid ${showAccountMenu ? '#34d399' : 'rgba(52,211,153,0.35)'}`,
+                cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'all 0.2s ease',
+                padding: 0,
+                boxShadow: showAccountMenu ? '0 0 12px rgba(52,211,153,0.3)' : 'none',
+              }}
+            >
+              <i className="fas fa-user" style={{ fontSize: '15px', color: '#34d399' }} />
+            </button>
+
+            {/* Dropdown */}
             {showAccountMenu && (
-              <div style={{ position: 'absolute', right: 0, top: '50px', background: 'white', color: 'black', borderRadius: '5px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)', minWidth: '150px', zIndex: 1000 }}>
-                <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-                  {user ? (
-                    <>
-                      <li style={{ padding: '10px', borderBottom: '1px solid #eee', fontWeight: 'bold', color: '#059669' }}>
-                        {user}
-                      </li>
-                      <li>
-                        <Link
-                          to="/edit-profile"
-                          onClick={() => setShowAccountMenu(false)}
-                          style={{ display: 'block', padding: '10px', textDecoration: 'none', color: '#374151', fontSize: '14px' }}
-                        >
-                          <i className="fas fa-user-edit" style={{ marginRight: '8px', color: '#059669' }}></i> Edit Profile
-                        </Link>
-                      </li>
-                      <li>
-                        <button onClick={handleLogout} style={{ width: '100%', padding: '10px', cursor: 'pointer', background: 'none', border: 'none', textAlign: 'left', color: '#dc3545' }}>
-                          <i className="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                      </li>
-                    </>
-                  ) : (
-                    <li>
-                      <Link to="/login" onClick={() => setShowAccountMenu(false)} style={{ display: 'block', padding: '10px', textDecoration: 'none', color: 'black' }}>
-                        <i className="fas fa-sign-in-alt"></i> Login
-                      </Link>
-                    </li>
-                  )}
-                </ul>
+              <div style={{
+                position: 'absolute',
+                right: 0,
+                top: '48px',
+                background: '#0a1f18',
+                border: '1px solid rgba(52,211,153,0.18)',
+                borderRadius: '14px',
+                boxShadow: '0 16px 40px rgba(0,0,0,0.55)',
+                minWidth: '188px',
+                zIndex: 1000,
+                overflow: 'hidden',
+                fontFamily: "'DM Sans', sans-serif",
+              }}>
+                {user ? (
+                  <>
+                    {/* Username row */}
+                    <div style={{
+                      padding: '13px 16px',
+                      borderBottom: '1px solid rgba(255,255,255,0.06)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                    }}>
+                      <div style={{
+                        width: '30px', height: '30px',
+                        borderRadius: '50%',
+                        background: 'rgba(52,211,153,0.12)',
+                        border: '1px solid rgba(52,211,153,0.3)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        flexShrink: 0,
+                      }}>
+                        <i className="fas fa-user" style={{ fontSize: '12px', color: '#34d399' }} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '13px', fontWeight: '700', color: '#e8f5f0', letterSpacing: '0.2px' }}>
+                          {user}
+                        </div>
+                        <div style={{ fontSize: '10px', color: '#2d5c47', fontWeight: '600', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                          Logged in
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Edit Profile */}
+                    <Link
+                      to="/edit-profile"
+                      onClick={() => setShowAccountMenu(false)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '10px',
+                        padding: '11px 16px',
+                        textDecoration: 'none',
+                        color: '#8fbfaa',
+                        fontSize: '13px', fontWeight: '600',
+                        borderBottom: '1px solid rgba(255,255,255,0.04)',
+                        transition: 'background 0.15s',
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(52,211,153,0.06)'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <div style={{
+                        width: '26px', height: '26px',
+                        borderRadius: '7px',
+                        background: 'rgba(52,211,153,0.1)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        flexShrink: 0,
+                      }}>
+                        <i className="fas fa-user-edit" style={{ fontSize: '11px', color: '#34d399' }} />
+                      </div>
+                      Edit Profile
+                    </Link>
+
+                    {/* Logout */}
+                    <button
+                      onClick={handleLogout}
+                      style={{
+                        width: '100%',
+                        display: 'flex', alignItems: 'center', gap: '10px',
+                        padding: '11px 16px',
+                        background: 'none', border: 'none',
+                        cursor: 'pointer',
+                        color: '#f87171',
+                        fontSize: '13px', fontWeight: '600',
+                        textAlign: 'left',
+                        fontFamily: "'DM Sans', sans-serif",
+                        transition: 'background 0.15s',
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,0.07)'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                    >
+                      <div style={{
+                        width: '26px', height: '26px',
+                        borderRadius: '7px',
+                        background: 'rgba(239,68,68,0.1)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        flexShrink: 0,
+                      }}>
+                        <i className="fas fa-sign-out-alt" style={{ fontSize: '11px', color: '#f87171' }} />
+                      </div>
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    to="/login"
+                    onClick={() => setShowAccountMenu(false)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '10px',
+                      padding: '12px 16px',
+                      textDecoration: 'none',
+                      color: '#34d399',
+                      fontSize: '13px', fontWeight: '600',
+                    }}
+                  >
+                    <i className="fas fa-sign-in-alt" style={{ fontSize: '13px' }} />
+                    Login
+                  </Link>
+                )}
               </div>
             )}
           </div>
