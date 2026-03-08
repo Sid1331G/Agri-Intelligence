@@ -13,7 +13,7 @@ const Home = () => {
                 <div className="home-hero-left" style={s.heroLeft}>
                     <span style={s.heroBadge}>
                         <span style={s.heroBadgeDot} />
-                        Agricultural Intelligence Platform
+                        AI-Powered Agri Intelligence
                     </span>
 
                     <h1 style={s.heroHeading}>
@@ -183,16 +183,17 @@ const s = {
         gridTemplateColumns: '1fr 1fr',
         minHeight: '100vh',
         paddingTop: '-25px',          /* offset for fixed navbar */
-        background: 'linear-gradient(160deg, #061510 0%, #081c14 100%)',
+        background: 'linear-gradient(160deg, #06151052 0%, #2024236e 100%)',
+        borderRadius: '20px',
     },
 
     /* Left */
     heroLeft: {
-        padding: '0px 48px 60px 20px',
+        padding: '0px 20px 20px 20px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        borderRight: '1px solid rgba(255,255,255,0.06)',
+        borderRight: '1px solid #2024236e 80%',
     },
     heroBadge: {
         display: 'inline-flex',
@@ -219,7 +220,7 @@ const s = {
     },
     heroHeading: {
         fontFamily: "'Syne', sans-serif",
-        fontSize: 'clamp(34px, 4vw, 58px)',
+        fontSize: 'clamp(34px, 4vw, 50px)',
         fontWeight: '800',
         lineHeight: '1.08',
         color: '#e8f5f0',
@@ -228,7 +229,7 @@ const s = {
     },
     heroAccent: { color: '#34d399' },
     heroSubtext: {
-        fontSize: '15px',
+        fontSize: '14px',
         color: '#7aab93',
         lineHeight: '1.7',
         maxWidth: '400px',
@@ -304,7 +305,8 @@ const s = {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        background: 'rgba(8,28,20,0.5)',
+        background: '#12413002 50%',
+        borderRadius: '20px',
     },
     videoCard: {
         background: '#0a1f18',
@@ -410,11 +412,12 @@ const s = {
     /* Feature cover section */
     featureSection: {
         minHeight: '100vh',
-        background: 'linear-gradient(180deg, #061510 0%, #081c14 100%)',
+        background: 'linear-gradient(160deg, #06151052 0%, #2024236e 100%)',
         padding: '80px 32px 100px',
         borderTop: '1px solid rgba(255,255,255,0.06)',
         display: 'flex',
         alignItems: 'center',
+        borderRadius: '20px',
     },
     featureSectionInner: {
         maxWidth: '1200px',
@@ -426,11 +429,12 @@ const s = {
     },
     sectionEyebrow: {
         display: 'block',
-        fontSize: '11px',
+        fontFamily: "'Syne', sans-serif",
+        fontSize: '20px',
         fontWeight: '700',
         letterSpacing: '2px',
         textTransform: 'uppercase',
-        color: '#34d399',
+        color: '#05eb96ff',
         marginBottom: '10px',
     },
     sectionTitle: {

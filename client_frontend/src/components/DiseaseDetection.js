@@ -50,7 +50,7 @@ const DiseaseDetection = () => {
 
                 {/* Upload card */}
                 <div style={{
-                    background: '#0a1f18',
+                    background: '#193d3093',
                     border: '1px solid rgba(255,255,255,0.07)',
                     borderRadius: '20px',
                     padding: '36px',

@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
-import { MapPin, Maximize, Sprout, Droplets } from 'lucide-react';
+import { MapPin, Maximize, Sprout, Droplets, ArrowLeft } from 'lucide-react';
 
 const FARMER_SUGGESTIONS = [
     'What are the price trends for my crops this week?',
@@ -239,17 +240,17 @@ const injectStyles = () => {
 
 /* ── Detail row ── */
 const Detail = ({ icon, label, value }) => (
-    <div style={{ display:'flex', gap:'10px', alignItems:'flex-start' }}>
-        <span style={{ fontSize:'15px', marginTop:'1px', flexShrink:0 }}>{icon}</span>
+    <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+        <span style={{ fontSize: '15px', marginTop: '1px', flexShrink: 0 }}>{icon}</span>
         <div>
             <div style={{
-                fontSize:'10px', color:'#2d5c47', fontWeight:'700',
-                textTransform:'uppercase', letterSpacing:'0.8px',
-                fontFamily:"'DM Sans',sans-serif", marginBottom:'2px',
+                fontSize: '10px', color: '#2d5c47', fontWeight: '700',
+                textTransform: 'uppercase', letterSpacing: '0.8px',
+                fontFamily: "'DM Sans',sans-serif", marginBottom: '2px',
             }}>{label}</div>
             <div style={{
-                fontSize:'13px', color:'#8fbfaa', fontWeight:'600',
-                fontFamily:"'DM Sans',sans-serif",
+                fontSize: '13px', color: '#8fbfaa', fontWeight: '600',
+                fontFamily: "'DM Sans',sans-serif",
             }}>{value || 'Not set'}</div>
         </div>
     </div>
@@ -257,11 +258,11 @@ const Detail = ({ icon, label, value }) => (
 
 /* ── Typing dots ── */
 const TypingDots = () => (
-    <div style={{ display:'flex', gap:'5px', alignItems:'center', padding:'4px 2px' }}>
-        {[0,1,2].map(i => (
+    <div style={{ display: 'flex', gap: '5px', alignItems: 'center', padding: '4px 2px' }}>
+        {[0, 1, 2].map(i => (
             <div key={i} style={{
-                width:'7px', height:'7px', borderRadius:'50%', background:'#34d399',
-                animation:`typingDot 1.2s ${i*0.2}s ease-in-out infinite`,
+                width: '7px', height: '7px', borderRadius: '50%', background: '#34d399',
+                animation: `typingDot 1.2s ${i * 0.2}s ease-in-out infinite`,
             }} />
         ))}
     </div>
@@ -271,18 +272,20 @@ const TypingDots = () => (
    MAIN COMPONENT
 ════════════════════════════════════════ */
 const AIAssistant = () => {
-    const [profile, setProfile]               = useState(null);
+    const [profile, setProfile] = useState(null);
     const [loadingProfile, setLoadingProfile] = useState(true);
-    const [profileError, setProfileError]     = useState('');
-    const [messages, setMessages]             = useState([]);
-    const [chatHistory, setChatHistory]       = useState([]);
-    const [input, setInput]                   = useState('');
-    const [sending, setSending]               = useState(false);
+    const [profileError, setProfileError] = useState('');
+    const [messages, setMessages] = useState([]);
+    const [chatHistory, setChatHistory] = useState([]);
+    const [input, setInput] = useState('');
+    const [sending, setSending] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState('English');
-    const [isListening, setIsListening]       = useState(false);
+    const [isListening, setIsListening] = useState(false);
+
+    const navigate = useNavigate();
 
     const messagesEndRef = useRef(null);
-    const inputRef       = useRef(null);
+    const inputRef = useRef(null);
     const recognitionRef = useRef(null);
 
     useEffect(() => {
@@ -313,12 +316,12 @@ const AIAssistant = () => {
         const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SR) return;
         recognitionRef.current = new SR();
-        recognitionRef.current.continuous     = false;
+        recognitionRef.current.continuous = false;
         recognitionRef.current.interimResults = false;
-        recognitionRef.current.lang = ({ English:'en-US', Tamil:'ta-IN' })[selectedLanguage] || 'en-US';
+        recognitionRef.current.lang = ({ English: 'en-US', Tamil: 'ta-IN' })[selectedLanguage] || 'en-US';
         recognitionRef.current.onresult = e => { setInput(e.results[0][0].transcript); setIsListening(false); };
-        recognitionRef.current.onerror  = () => setIsListening(false);
-        recognitionRef.current.onend    = () => setIsListening(false);
+        recognitionRef.current.onerror = () => setIsListening(false);
+        recognitionRef.current.onend = () => setIsListening(false);
     }, [selectedLanguage]);
 
     const toggleListening = () => {
@@ -361,18 +364,18 @@ const AIAssistant = () => {
         if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
     };
 
-    const role         = profile?.role || 'farmer';
-    const isFarmer     = role === 'farmer';
-    const accent       = isFarmer ? '#34d399' : '#38bdf8';
-    const accentSolid  = isFarmer ? '#1db87a' : '#0ea5e9';
-    const accentDim    = isFarmer ? 'rgba(52,211,153,0.1)'  : 'rgba(56,189,248,0.1)';
+    const role = profile?.role || 'farmer';
+    const isFarmer = role === 'farmer';
+    const accent = isFarmer ? '#34d399' : '#38bdf8';
+    const accentSolid = isFarmer ? '#1db87a' : '#0ea5e9';
+    const accentDim = isFarmer ? 'rgba(52,211,153,0.1)' : 'rgba(56,189,248,0.1)';
     const accentBorder = isFarmer ? 'rgba(52,211,153,0.25)' : 'rgba(56,189,248,0.25)';
-    const suggestions  = isFarmer ? FARMER_SUGGESTIONS : DEALER_SUGGESTIONS;
+    const suggestions = isFarmer ? FARMER_SUGGESTIONS : DEALER_SUGGESTIONS;
 
     if (loadingProfile) return (
         <div style={s.centerPage}>
             <div style={{ ...s.spinner, borderTopColor: accent }} />
-            <p style={{ color:'#4d7a65', marginTop:'14px', fontSize:'14px', fontFamily:"'DM Sans',sans-serif" }}>
+            <p style={{ color: '#ffffffff', marginTop: '14px', fontSize: '14px', fontFamily: "'DM Sans',sans-serif" }}>
                 Loading your personalized assistant...
             </p>
         </div>
@@ -380,8 +383,8 @@ const AIAssistant = () => {
 
     if (profileError) return (
         <div style={s.centerPage}>
-            <div style={{ fontSize:'48px', marginBottom:'16px' }}>⚠️</div>
-            <p style={{ color:'#f87171', fontWeight:'600', fontSize:'15px', textAlign:'center', maxWidth:'360px', fontFamily:"'DM Sans',sans-serif" }}>
+            <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
+            <p style={{ color: '#f87171', fontWeight: '600', fontSize: '15px', textAlign: 'center', maxWidth: '360px', fontFamily: "'DM Sans',sans-serif" }}>
                 {profileError}
             </p>
         </div>
@@ -396,11 +399,11 @@ const AIAssistant = () => {
                 {/* Profile card
                     Desktop : full vertical card with all detail rows
                     Phone   : compact horizontal pill — detail block hidden via CSS */}
-                <div className="profile-card" style={{ ...s.profileCard, borderTop:`2px solid ${accent}` }}>
+                <div className="profile-card" style={{ ...s.profileCard, borderTop: `2px solid ${accent}` }}>
 
                     <div className="profile-avatar"
-                         style={{ ...s.roleAvatar, background: accentDim, border:`1px solid ${accentBorder}` }}>
-                        <span style={{ fontSize:'30px' }}>{isFarmer ? '🌾' : '🏪'}</span>
+                        style={{ ...s.roleAvatar, background: accentDim, border: `1px solid ${accentBorder}` }}>
+                        <span style={{ fontSize: '30px' }}>{isFarmer ? '🌾' : '🏪'}</span>
                     </div>
 
                     <h3 className="profile-name" style={{ ...s.profileName, color: accent }}>
@@ -408,7 +411,7 @@ const AIAssistant = () => {
                     </h3>
 
                     <span className="profile-badge"
-                          style={{ ...s.roleBadge, background: accentDim, color: accent, border:`1px solid ${accentBorder}` }}>
+                        style={{ ...s.roleBadge, background: accentDim, color: accent, border: `1px solid ${accentBorder}` }}>
                         {isFarmer ? '🌾 Farmer' : '🏪 Dealer'}
                     </span>
 
@@ -418,29 +421,29 @@ const AIAssistant = () => {
                     <div className="profile-details-block" style={s.profileDetails}>
                         {isFarmer && profile?.profile && (<>
 
-                                   <Detail icon={<MapPin size={18} />} label="District" value={profile.profile.district} />
-                                   <Detail icon={<Maximize size={18} />} label="Land"     value={profile.profile.land_size_acres ? `${profile.profile.land_size_acres} Acres` : null} />
-                                   <Detail icon={<Sprout size={18} />}   label="Farming"  value={profile.profile.farming_type} />
-                                   <Detail icon={<Droplets size={18} />} label="Irrigation" value={profile.profile.irrigation_method} />
+                            <Detail icon={<MapPin size={18} />} label={<span style={{ color: "#fff" }}>District</span>} value={profile.profile.district} />
+                            <Detail icon={<Maximize size={18} />} label={<span style={{ color: "#fff" }}>Land</span>} value={profile.profile.land_size_acres ? `${profile.profile.land_size_acres} Acres` : null} />
+                            <Detail icon={<Sprout size={18} />} label={<span style={{ color: "#fff" }}>Farming</span>} value={profile.profile.farming_type} />
+                            <Detail icon={<Droplets size={18} />} label={<span style={{ color: "#fff" }}>Irrigation</span>} value={profile.profile.irrigation_method} />
                             <div>
                                 <div style={s.tagLabel}>🌾 Crops</div>
                                 <div style={s.tagGrid}>
                                     {(profile.profile.crops || []).map(c => (
-                                        <span key={c} style={{ ...s.tag, background: accentDim, color: accent, border:`1px solid ${accentBorder}` }}>{c}</span>
+                                        <span key={c} style={{ ...s.tag, background: accentDim, color: accent, border: `1px solid ${accentBorder}` }}>{c}</span>
                                     ))}
                                 </div>
                             </div>
                         </>)}
                         {!isFarmer && profile?.profile && (<>
-                             <Detail icon={<MapPin size={18} />}    label="District" value={profile.profile.district} />
-                             <Detail icon={<Building2 size={18} />} label="Business" value={profile.profile.business_type} />
-                             <Detail icon={<Store size={18} />}     label="Market"   value={profile.profile.market_location} />
-                             <Detail icon={<Package size={18} />}   label="Volume"   value={profile.profile.trading_volume} />
+                            <Detail icon={<MapPin size={18} />} label={<span style={{ color: "#fff" }}>District</span>} value={profile.profile.district} />
+                            <Detail icon={<Building2 size={18} />} label={<span style={{ color: "#fff" }}>Business</span>} value={profile.profile.business_type} />
+                            <Detail icon={<Store size={18} />} label={<span style={{ color: "#fff" }}>Market</span>} value={profile.profile.market_location} />
+                            <Detail icon={<Package size={18} />} label={<span style={{ color: "#fff" }}>Volume</span>} value={profile.profile.trading_volume} />
                             <div>
                                 <div style={s.tagLabel}>📦 Commodities</div>
                                 <div style={s.tagGrid}>
                                     {(profile.profile.commodities || []).map(c => (
-                                        <span key={c} style={{ ...s.tag, background: accentDim, color: accent, border:`1px solid ${accentBorder}` }}>{c}</span>
+                                        <span key={c} style={{ ...s.tag, background: accentDim, color: accent, border: `1px solid ${accentBorder}` }}>{c}</span>
                                     ))}
                                 </div>
                             </div>
@@ -452,8 +455,8 @@ const AIAssistant = () => {
                 <div className="lang-card" style={s.langCard}>
                     <label style={s.langLabel}>🌐 Response Language</label>
                     <select value={selectedLanguage} onChange={e => setSelectedLanguage(e.target.value)} style={s.langSelect}>
-                        <option value="English" style={{ background:'#061510', color:'#e8f5f0' }}>English</option>
-                        <option value="Tamil"   style={{ background:'#061510', color:'#e8f5f0' }}>Tamil</option>
+                        <option value="English" style={{ background: '#1b4234ff', color: '#ffffffff' }}>English</option>
+                        <option value="Tamil" style={{ background: '#1b4234ff', color: '#ffffffff' }}>Tamil</option>
                     </select>
                 </div>
             </aside>
@@ -461,16 +464,44 @@ const AIAssistant = () => {
             {/* ══ CHAT AREA ══ */}
             <main className="ai-chat-area" style={s.chatArea}>
 
-                <div className="ai-chat-header" style={{ ...s.chatHeader, borderBottom:`1px solid ${accentBorder}` }}>
+                <div className="ai-chat-header" style={{ ...s.chatHeader, borderBottom: `1px solid ${accentBorder}` }}>
                     <div style={s.chatHeaderLeft}>
-                        <div style={{ ...s.chatHeaderIcon, background: accentDim, border:`1px solid ${accentBorder}` }}>🤖</div>
+                        <button
+                            onClick={() => navigate('/')}
+                            style={{
+                                background: 'transparent',
+                                border: 'none',
+                                cursor: 'pointer',
+                                padding: '8px',
+                                marginRight: '12px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderRadius: '10px',
+                                color: accent,
+                                transition: 'all 0.2s ease',
+                                background: accentDim,
+                                border: `1px solid ${accentBorder}`
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.background = accent;
+                                e.currentTarget.style.color = '#fff';
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.background = accentDim;
+                                e.currentTarget.style.color = accent;
+                            }}
+                        >
+                            <ArrowLeft size={18} />
+                        </button>
+                        <div style={{ ...s.chatHeaderIcon, background: accentDim, border: `1px solid ${accentBorder}` }}>🤖</div>
                         <div>
                             <h2 style={s.chatHeaderTitle}>AI Agri-Assistant</h2>
                             <p style={s.chatHeaderSub}>Personalized for your {isFarmer ? 'farm' : 'business'}</p>
                         </div>
                     </div>
                     <div style={s.onlineIndicator}>
-                        <span style={{ ...s.onlineDot, background: accent, boxShadow:`0 0 6px ${accent}` }} />
+                        <span style={{ ...s.onlineDot, background: accent, boxShadow: `0 0 6px ${accent}` }} />
                         Online
                     </div>
                 </div>
@@ -478,23 +509,23 @@ const AIAssistant = () => {
                 <div className="ai-messages" style={s.messages}>
                     {messages.map((msg, i) => (
                         <div key={i} style={{
-                            display:'flex',
+                            display: 'flex',
                             justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-                            marginBottom:'14px',
-                            animation:'fadeUp 0.2s ease',
+                            marginBottom: '14px',
+                            animation: 'fadeUp 0.2s ease',
                         }}>
                             {msg.sender === 'bot' && (
-                                <div style={{ ...s.botAvatar, background: accentDim, border:`1px solid ${accentBorder}` }}>🤖</div>
+                                <div style={{ ...s.botAvatar, background: accentDim, border: `1px solid ${accentBorder}` }}>🤖</div>
                             )}
                             <div className="ai-bubble" style={{
                                 ...s.bubble,
-                                background:   msg.sender === 'user' ? accentSolid : '#0d2820',
-                                color:        msg.sender === 'user' ? '#fff' : '#8fbfaa',
+                                background: msg.sender === 'user' ? accentSolid : '#0d2820',
+                                color: msg.sender === 'user' ? '#fff' : '#8fbfaa',
                                 borderRadius: msg.sender === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                                marginLeft:   msg.sender === 'bot'  ? '10px' : 0,
-                                marginRight:  msg.sender === 'user' ? 0 : 'auto',
-                                border:       msg.sender === 'bot'  ? `1px solid ${accentBorder}` : 'none',
-                                boxShadow:    msg.sender === 'user' ? `0 4px 14px ${accentSolid}40` : '0 2px 10px rgba(0,0,0,0.25)',
+                                marginLeft: msg.sender === 'bot' ? '10px' : 0,
+                                marginRight: msg.sender === 'user' ? 0 : 'auto',
+                                border: msg.sender === 'bot' ? `1px solid ${accentBorder}` : 'none',
+                                boxShadow: msg.sender === 'user' ? `0 4px 14px ${accentSolid}40` : '0 2px 10px rgba(0,0,0,0.25)',
                             }}>
                                 {msg.sender === 'bot'
                                     ? <div className="ai-md"><ReactMarkdown>{msg.text}</ReactMarkdown></div>
@@ -505,9 +536,9 @@ const AIAssistant = () => {
                     ))}
 
                     {sending && (
-                        <div style={{ display:'flex', alignItems:'flex-end', gap:'10px', marginBottom:'14px' }}>
-                            <div style={{ ...s.botAvatar, background: accentDim, border:`1px solid ${accentBorder}` }}>🤖</div>
-                            <div style={{ ...s.bubble, background:'#0d2820', border:`1px solid ${accentBorder}`, borderRadius:'16px 16px 16px 4px' }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '10px', marginBottom: '14px' }}>
+                            <div style={{ ...s.botAvatar, background: accentDim, border: `1px solid ${accentBorder}` }}>🤖</div>
+                            <div style={{ ...s.bubble, background: '#0d2820', border: `1px solid ${accentBorder}`, borderRadius: '16px 16px 16px 4px' }}>
                                 <TypingDots />
                             </div>
                         </div>
@@ -516,12 +547,28 @@ const AIAssistant = () => {
                 </div>
 
                 {messages.length <= 1 && (
-                    <div className="ai-suggestions-area" style={{ ...s.suggestionsArea, borderTop:'1px solid rgba(255,255,255,0.05)' }}>
-                        <p style={s.suggestionsLabel}>💡 Quick questions for you</p>
+                    <div className="ai-suggestions-area" style={{ ...s.suggestionsArea, borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                        <p style={s.suggestionsLabel}><span style={{ color: "#fff" }}>💡 Quick questions for you</span></p>
                         <div className="ai-suggestions-row" style={s.suggestionsRow}>
                             {suggestions.map((sg, i) => (
-                                <button key={i} onClick={() => handleSend(sg)} className="ai-suggestion-chip"
-                                    style={{ ...s.chip, border:`1px solid ${accentBorder}`, color: accent, background: accentDim }}>
+                                <button key={i}
+                                    onClick={() => handleSend(sg)}
+                                    className="ai-suggestion-chip"
+                                    style={{
+                                        ...s.chip,
+                                        border: `1px solid ${accentBorder}`,
+                                        color: accent,
+                                        background: accentDim
+                                    }}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.background = accent;
+                                        e.currentTarget.style.color = '#fff';
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.background = accentDim;
+                                        e.currentTarget.style.color = accent;
+                                    }}
+                                >
                                     {sg}
                                 </button>
                             ))}
@@ -529,7 +576,7 @@ const AIAssistant = () => {
                     </div>
                 )}
 
-                <div className="ai-input-row" style={{ ...s.inputArea, borderTop:'1px solid rgba(255,255,255,0.05)' }}>
+                <div className="ai-input-row" style={{ ...s.inputArea, borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                     <button onClick={toggleListening} className="ai-icon-btn" style={{
                         ...s.iconBtn,
                         background: isListening ? 'rgba(239,68,68,0.15)' : accentDim,
@@ -555,14 +602,14 @@ const AIAssistant = () => {
                     <button onClick={() => handleSend()} disabled={sending || !input.trim()} className="ai-icon-btn"
                         style={{
                             ...s.iconBtn,
-                            background:   input.trim() ? accentSolid : accentDim,
-                            border:       `1px solid ${input.trim() ? 'transparent' : accentBorder}`,
-                            color:        input.trim() ? '#fff' : accent,
-                            boxShadow:    input.trim() ? `0 4px 14px ${accentSolid}45` : 'none',
-                            cursor:       input.trim() ? 'pointer' : 'default',
-                            opacity:      sending ? 0.5 : 1,
+                            background: input.trim() ? accentSolid : accentDim,
+                            border: `1px solid ${input.trim() ? 'transparent' : accentBorder}`,
+                            color: input.trim() ? '#fff' : accent,
+                            boxShadow: input.trim() ? `0 4px 14px ${accentSolid}45` : 'none',
+                            cursor: input.trim() ? 'pointer' : 'default',
+                            opacity: sending ? 0.5 : 1,
                             borderRadius: '12px',
-                            fontSize:     '16px',
+                            fontSize: '16px',
                         }}>➤</button>
                 </div>
             </main>
@@ -574,7 +621,7 @@ const AIAssistant = () => {
 const s = {
     page: {
         display: 'flex', gap: '16px',
-        height: '100dvh',
+        
         padding: '20px 20px 0',
         boxSizing: 'border-box',
         maxWidth: '1300px', margin: '0 auto',
@@ -597,7 +644,7 @@ const s = {
         gap: '10px', overflowY: 'auto', maxHeight: '100%',
     },
     profileCard: {
-        background: '#0a1f18',
+        background: '#193d3093',
         border: '1px solid rgba(255,255,255,0.07)',
         borderRadius: '18px', padding: '22px 16px',
         display: 'flex', flexDirection: 'column',
@@ -619,13 +666,13 @@ const s = {
     },
     divider: {
         width: '100%', height: '1px',
-        background: 'rgba(255,255,255,0.06)', margin: '4px 0',
+        background: 'rgba(255, 255, 255, 0.23)', margin: '4px 0',
     },
     profileDetails: {
-        width: '100%', display: 'flex', flexDirection: 'column', gap: '12px',
+        width: '100%', display: 'flex', flexDirection: 'column', gap: '12px', color: '#ffffffff',
     },
     tagLabel: {
-        fontSize: '10px', color: '#2d5c47', fontWeight: '700',
+        fontSize: '10px', color: '#ffffffff', fontWeight: '700',
         textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '6px',
     },
     tagGrid: { display: 'flex', flexWrap: 'wrap', gap: '5px' },
@@ -634,13 +681,13 @@ const s = {
         padding: '3px 9px', borderRadius: '10px', letterSpacing: '0.2px',
     },
     langCard: {
-        background: '#0a1f18',
+        background: '#193d3093',
         border: '1px solid rgba(255,255,255,0.07)',
         borderRadius: '14px', padding: '14px 16px',
         display: 'flex', flexDirection: 'column', gap: '8px', flexShrink: 0,
     },
     langLabel: {
-        fontSize: '12px', fontWeight: '700', color: '#4d7a65', letterSpacing: '0.3px',
+        fontSize: '12px', fontWeight: '700', color: '#ffffffff', letterSpacing: '0.3px',
     },
     langSelect: {
         width: '100%', padding: '8px 10px', borderRadius: '8px',
@@ -650,7 +697,7 @@ const s = {
     },
     chatArea: {
         flex: 1, display: 'flex', flexDirection: 'column',
-        background: '#0a1f18',
+        background: '#193d3093',
         border: '1px solid rgba(255,255,255,0.07)',
         borderRadius: '18px 18px 0 0',
         overflow: 'hidden', minWidth: 0,
@@ -660,7 +707,7 @@ const s = {
         padding: '14px 22px', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         flexShrink: 0,
-        background: 'linear-gradient(135deg, #0d2820, #061510)',
+        background: 'linear-gradient(135deg, #1b4234ff, #1b4234ff)',
     },
     chatHeaderLeft: { display: 'flex', alignItems: 'center', gap: '12px' },
     chatHeaderIcon: {
@@ -684,7 +731,7 @@ const s = {
         flex: 1, overflowY: 'auto',
         padding: '18px 20px 10px',
         display: 'flex', flexDirection: 'column',
-        background: '#061510',
+        background: '#193d3093',
     },
     botAvatar: {
         width: '30px', height: '30px', borderRadius: '50%',
@@ -697,7 +744,7 @@ const s = {
         fontSize: '14px', lineHeight: '1.6', wordBreak: 'break-word',
     },
     suggestionsArea: {
-        padding: '10px 20px 12px', flexShrink: 0, background: '#061510',
+        padding: '10px 20px 12px', flexShrink: 0, background: '#193d3093',
     },
     suggestionsLabel: {
         fontSize: '11px', color: '#2d5c47', fontWeight: '700',
@@ -713,7 +760,7 @@ const s = {
     inputArea: {
         padding: '12px 16px', display: 'flex',
         gap: '8px', alignItems: 'flex-end',
-        flexShrink: 0, background: '#0a1f18',
+        flexShrink: 0, background: '#193d3093',
     },
     iconBtn: {
         width: '42px', height: '42px', borderRadius: '12px',
@@ -723,7 +770,7 @@ const s = {
     },
     textarea: {
         flex: 1, padding: '11px 15px',
-        background: '#061510',
+        background: '#193d3093',
         border: '1px solid rgba(255,255,255,0.08)',
         borderRadius: '12px', fontSize: '14px', color: '#e8f5f0',
         resize: 'none', outline: 'none', lineHeight: '1.5',
