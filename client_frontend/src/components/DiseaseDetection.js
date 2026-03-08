@@ -50,7 +50,7 @@ const DiseaseDetection = () => {
 
                 {/* Upload card */}
                 <div style={{
-                    background: '#193d3093',
+                    background: '#050505c7',
                     border: '1px solid rgba(255,255,255,0.07)',
                     borderRadius: '20px',
                     padding: '36px',
@@ -142,7 +142,7 @@ const DiseaseDetection = () => {
                         disabled={loading}
                         style={{
                             width: '100%', padding: '14px',
-                            background: loading ? '#1a2e26' : '#1db87a',
+                            background: loading ? '#1a2e26' : '#1db87ac7',
                             color: 'white', border: 'none',
                             borderRadius: '10px', cursor: loading ? 'not-allowed' : 'pointer',
                             fontWeight: '700', fontSize: '14px',

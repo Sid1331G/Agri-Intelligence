@@ -65,7 +65,7 @@ const PredictionComponent = () => {
 
             {/* Form card */}
             <div style={{
-                background: '#193d3093',
+                background: '#0a1f18',
                 border: '1px solid rgba(255,255,255,0.07)',
                 borderRadius: '20px',
                 padding: '40px',
@@ -193,10 +193,10 @@ const PredictionComponent = () => {
                                 fontFamily: "'Syne', sans-serif",
                                 marginTop: 0, marginBottom: '6px',
                                 fontSize: '16px', fontWeight: '800',
-                                color: isToday ? '#34d399' : '#e8f5f0',
+                                color: isToday ? '#deece7' : '#e8f5f0',
                             }}>{item.Day}</h3>
 
-                            <p style={{ fontSize: '12px', color: '#4d7a65', margin: '0 0 14px' }}>
+                            <p style={{ fontSize: '12px', color: '#f0f0f0', margin: '0 0 14px' }}>
                                 {item.Date}
                             </p>
 
@@ -206,7 +206,7 @@ const PredictionComponent = () => {
                                 color: '#e8f5f0', margin: '0 0 4px',
                             }}>
                                 ₹{item.Predicted_Price_Per_kg}
-                                <span style={{ fontSize: '12px', color: '#4d7a65', fontWeight: '500' }}>/kg</span>
+                                <span style={{ fontSize: '12px', color: '#edf0ee', fontWeight: '500' }}>/kg</span>
                             </p>
 
                             <div style={{
@@ -214,13 +214,13 @@ const PredictionComponent = () => {
                                 marginTop: '14px', paddingTop: '12px',
                                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                             }}>
-                                <small style={{ color: '#4d7a65', fontSize: '11px' }}>
+                                <small style={{ color: '#e3ebe7', fontSize: '11px' }}>
                                     {item.Predicted_Modal_Price_Quintal}/q
                                 </small>
                                 <small style={{
-                                    color: isToday ? '#34d399' : '#6ee7b7',
+                                    color: isToday ? '#b6c0bc' : '#6ee7b7',
                                     fontWeight: '700', fontSize: '11px',
-                                    background: isToday ? 'rgba(52,211,153,0.12)' : 'rgba(52,211,153,0.06)',
+                                    background: isToday ? 'rgba(20, 82, 63, 0.97)' : 'rgba(52,211,153,0.06)',
                                     padding: '2px 8px', borderRadius: '6px',
                                 }}>{item.Type}</small>
                             </div>
