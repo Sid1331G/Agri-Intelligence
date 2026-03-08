@@ -551,7 +551,7 @@ const s = {
     },
     header: {
         textAlign: 'center',
-        padding: '20px 16px 16px',
+        padding: '40px 16px 16px',
         flexShrink: 0,
         background: 'linear-gradient(160deg, #061510 0%, #081c14 100%)',
         borderBottom: '1px solid rgba(255,255,255,0.05)',

@@ -168,7 +168,7 @@ function App() {
                 background: showAccountMenu
                   ? 'rgba(52,211,153,0.2)'
                   : 'rgba(52,211,153,0.1)',
-                border: `2px solid ${showAccountMenu ? '#34d399' : 'rgba(52,211,153,0.35)'}`,
+                border: `2px solid ${showAccountMenu ? '#e2eee9' : 'rgba(52,211,153,0.35)'}`,
                 cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 transition: 'all 0.2s ease',
@@ -176,7 +176,7 @@ function App() {
                 boxShadow: showAccountMenu ? '0 0 12px rgba(52,211,153,0.3)' : 'none',
               }}
             >
-              <i className="fas fa-user" style={{ fontSize: '15px', color: '#34d399' }} />
+              <i className="fas fa-user" style={{ fontSize: '15px', color: '#f8fffd' }} />
             </button>
 
             {/* Dropdown */}
@@ -218,7 +218,7 @@ function App() {
                         <div style={{ fontSize: '13px', fontWeight: '700', color: '#e8f5f0', letterSpacing: '0.2px' }}>
                           {user}
                         </div>
-                        <div style={{ fontSize: '10px', color: '#2d5c47', fontWeight: '600', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                        <div style={{ fontSize: '10px', color: '#01ff95', fontWeight: '600', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
                           Logged in
                         </div>
                       </div>
@@ -232,12 +232,12 @@ function App() {
                         display: 'flex', alignItems: 'center', gap: '10px',
                         padding: '11px 16px',
                         textDecoration: 'none',
-                        color: '#8fbfaa',
+                        color: '#f4f7f6',
                         fontSize: '13px', fontWeight: '600',
                         borderBottom: '1px solid rgba(255,255,255,0.04)',
                         transition: 'background 0.15s',
                       }}
-                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(52,211,153,0.06)'}
+                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(52, 211, 153, 0.2)'}
                       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                     >
                       <div style={{
@@ -267,7 +267,7 @@ function App() {
                         fontFamily: "'DM Sans', sans-serif",
                         transition: 'background 0.15s',
                       }}
-                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,0.07)'}
+                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 9, 9, 0.94)'}
                       onMouseLeave={e => e.currentTarget.style.background = 'none'}
                     >
                       <div style={{

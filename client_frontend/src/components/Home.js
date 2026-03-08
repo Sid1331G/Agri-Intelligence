@@ -287,7 +287,7 @@ const s = {
         fontFamily: "'Syne', sans-serif",
         fontSize: '26px',
         fontWeight: '800',
-        color: '#34d399',
+        color: '#12d865',
         lineHeight: 1,
         marginBottom: '5px',
     },
@@ -296,7 +296,7 @@ const s = {
         fontWeight: '700',
         letterSpacing: '1.1px',
         textTransform: 'uppercase',
-        color: '#4d7a65',
+        color: '#0bd878',
     },
 
     /* Right — video panel */
@@ -305,7 +305,7 @@ const s = {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        background: '#12413002 50%',
+        background: '#11131200 50%',
         borderRadius: '20px',
     },
     videoCard: {
