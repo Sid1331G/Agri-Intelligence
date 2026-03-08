@@ -240,7 +240,7 @@ const s = {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '24px 16px',
-        background: 'linear-gradient(160deg, #061510 0%, #081c14 100%)',
+        background: 'linear-gradient(160deg, #1dd19504 0%, #081c14 100%)',
         boxSizing: 'border-box',
     },
     card: {
