@@ -240,7 +240,7 @@ const s = {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '24px 16px',
-        background: 'linear-gradient(160deg, #1dd19504 0%, #081c14 100%)',
+        /* background: 'linear-gradient(160deg, #1dd19504 0%, #081c14 100%)', */
         boxSizing: 'border-box',
     },
     card: {
@@ -282,7 +282,7 @@ const s = {
     },
     brandSub: {
         margin: '3px 0 0', fontSize: '11px',
-        color: '#4d7a65', letterSpacing: '0.3px',
+        color: 'rgb(225 225 225)', letterSpacing: '0.3px',
     },
     toggleRow: {
         display: 'flex',
@@ -353,7 +353,7 @@ const s = {
     },
     switchText: {
         marginTop: '22px', textAlign: 'center',
-        fontSize: '13px', color: '#4d7a65',
+        fontSize: '13px', color: 'rgb(225 225 225)',
     },
     switchLink: {
         color: '#34d399', fontWeight: '600',

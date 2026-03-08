@@ -292,7 +292,7 @@ const ProfileSetup = ({ role, username, onComplete, isEditMode = false }) => {
                         <span style={{ ...s.stepDot, background: accent, boxShadow: `0 0 6px ${accent}` }} />
                         {isEditMode
                             ? `✏️ Edit ${isFarmer ? '🌾 Farmer' : '🏪 Dealer'} Profile`
-                            : `Step 2 of 2 — ${isFarmer ? '🌾 Farmer' : '🏪 Dealer'} Profile`}
+                            : `Step 2 of 2 -${isFarmer ? '🌾 Farmer' : '🏪 Dealer'} Profile`}
                     </span>
                     <h1 className="ps-title" style={s.title}>
                         {isEditMode ? 'Update your profile' : `Tell us about your ${isFarmer ? 'farm' : 'business'}`}
@@ -304,7 +304,7 @@ const ProfileSetup = ({ role, username, onComplete, isEditMode = false }) => {
 
                 {/* Scrollable form body */}
                 <div style={s.scrollBody}>
-                <form onSubmit={handleSubmit} style={{ width: '100%', paddingTop: '24px' }}>
+                <form onSubmit={handleSubmit} style={{ width: '100%'}}>
                 <div className="ps-card" style={s.card}>
 
                     {error && (
@@ -518,9 +518,9 @@ const s = {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        background: 'linear-gradient(160deg, #061510 0%, #081c14 100%)',
         boxSizing: 'border-box',
         overflow: 'hidden',
+        padding: '80px 0 0',
     },
     container: {
         width: '100%',
@@ -534,7 +534,7 @@ const s = {
         flex: 1,
         overflowY: 'auto',
         WebkitOverflowScrolling: 'touch',
-        padding: '0 16px calc(48px + env(safe-area-inset-bottom))',
+        padding: '0px 16px calc(48px + env(safe-area-inset-bottom))',
         boxSizing: 'border-box',
     },
     loadingBox: {
@@ -553,8 +553,6 @@ const s = {
         textAlign: 'center',
         padding: '40px 16px 16px',
         flexShrink: 0,
-        background: 'linear-gradient(160deg, #061510 0%, #081c14 100%)',
-        borderBottom: '1px solid rgba(255,255,255,0.05)',
         width: '100%',
         boxSizing: 'border-box',
     },
@@ -566,6 +564,7 @@ const s = {
         fontSize: '11px',
         padding: '5px 14px',
         borderRadius: '20px',
+        marginTop: '50px',
         marginBottom: '14px',
         letterSpacing: '0.6px',
         textTransform: 'uppercase',
@@ -584,14 +583,14 @@ const s = {
         letterSpacing: '-0.2px',
     },
     subtitle: {
-        fontSize: '14px', color: '#4d7a65',
+        fontSize: '14px', color: '#d2d6d4',
         margin: 0, lineHeight: '1.6',
     },
     card: {
         background: '#0a1f18',
         border: '30px solid rgba(255,255,255,0.07)',
         borderRadius: '20px',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+        boxShadow: '0 8px 32px rgba(66, 64, 64, 0.4)',
         padding: '30px 28px',
         display: 'flex', flexDirection: 'column',
         gap: '24px',

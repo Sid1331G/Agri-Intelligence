@@ -105,7 +105,7 @@ const RoleSelection = ({ onRoleSelect }) => {
             icon: '🏪',
             title: 'Dealer',
             subtitle: 'I buy and sell agricultural commodities',
-            description: 'Get market intelligence, price trend analysis, and strategic advice to make the best buying and selling decisions.',
+            description: 'Get market intelligence, price trend analysis, and strategic advice to make the best buying and selling decisions on your district.',
             features: ['Commodity price trends', 'Market strategy advice', 'Best buy/sell timing', 'Demand forecasting'],
             accent: '#38bdf8',
             accentDim: 'rgba(56,189,248,0.1)',
@@ -121,7 +121,7 @@ const RoleSelection = ({ onRoleSelect }) => {
                 <div className="role-header" style={s.header}>
                     <span className="role-step-badge" style={s.stepBadge}>
                         <span style={s.stepDot} /> Step 1 of 2
-                    </span>
+                    </span> 
                     <h1 className="role-title" style={s.title}>Who are you?</h1>
                     <p className="role-subtitle" style={s.subtitle}>
                         Select your role so we can personalize your experience.
@@ -216,7 +216,6 @@ const s = {
         paddingBottom: '0',
         paddingLeft: '20px',
         paddingRight: '20px',
-        background: 'linear-gradient(160deg, #061510 0%, #081c14 100%)',
         boxSizing: 'border-box',
     },
     container: {
@@ -244,7 +243,7 @@ const s = {
         borderRadius: '20px',
         letterSpacing: '0.8px',
         textTransform: 'uppercase',
-        marginBottom: '12px',
+        marginTop: '85px',
     },
     stepDot: {
         width: '6px', height: '6px',
@@ -258,13 +257,13 @@ const s = {
         fontSize: 'clamp(24px, 4vw, 42px)',
         fontWeight: '800',
         color: '#e8f5f0',
-        margin: '65px 0 6px',
         letterSpacing: '-0.5px',
+        margin: '8px 0 8px',
     },
     subtitle: {
         fontSize: '15px',
-        color: '#7aab93',
-        margin: 0,
+        color: '#cae4d7',
+        margin: '0 0 0',
         lineHeight: '1.6',
     },
     cardsRow: {
@@ -310,13 +309,13 @@ const s = {
     },
     roleSubtitle: {
         fontSize: '12px',
-        color: '#4d7a65',
+        color: '#e9e9e9',
         margin: '0 0 8px',
         fontWeight: '500',
     },
     roleDesc: {
         fontSize: '12.5px',
-        color: '#7aab93',
+        color: '#bcc0be',
         lineHeight: '1.6',
         margin: '0 0 16px',
     },
@@ -349,7 +348,7 @@ const s = {
     },
     footerNote: {
         fontSize: '12px',
-        color: '#2d5c47',
+        color: '#cae4d7',
         margin: 0,
         letterSpacing: '0.2px',
     },

@@ -18,7 +18,7 @@ const LoginRequired = ({ pageName }) => (
     display: 'flex', flexDirection: 'column',
     alignItems: 'center', justifyContent: 'center',
     minHeight: '70vh', textAlign: 'center', padding: '40px 20px',
-    background: 'linear-gradient(160deg, #061510, #081c14)',
+    /* background: 'linear-gradient(160deg, #061510, #081c14)', */
   }}>
     <div style={{
       background: '#0a1f18',
@@ -168,7 +168,7 @@ function App() {
                 background: showAccountMenu
                   ? 'rgba(52,211,153,0.2)'
                   : 'rgba(52,211,153,0.1)',
-                border: `2px solid ${showAccountMenu ? '#e2eee9' : 'rgba(52,211,153,0.35)'}`,
+                border: `2px solid ${showAccountMenu ? '#41d195' : 'rgba(52,211,153,0.35)'}`,
                 cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 transition: 'all 0.2s ease',
@@ -212,7 +212,7 @@ function App() {
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         flexShrink: 0,
                       }}>
-                        <i className="fas fa-user" style={{ fontSize: '12px', color: '#34d399' }} />
+                        <i className="fas fa-user" style={{ fontSize: '12px', color: '#ffffff' }} />
                       </div>
                       <div>
                         <div style={{ fontSize: '13px', fontWeight: '700', color: '#e8f5f0', letterSpacing: '0.2px' }}>
@@ -247,7 +247,7 @@ function App() {
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         flexShrink: 0,
                       }}>
-                        <i className="fas fa-user-edit" style={{ fontSize: '11px', color: '#34d399' }} />
+                        <i className="fas fa-user-edit" style={{ fontSize: '11px', color: '#ffffff' }} />
                       </div>
                       Edit Profile
                     </Link>
@@ -290,11 +290,11 @@ function App() {
                       display: 'flex', alignItems: 'center', gap: '10px',
                       padding: '12px 16px',
                       textDecoration: 'none',
-                      color: '#34d399',
+                      color: '#ffffff',
                       fontSize: '13px', fontWeight: '600',
                     }}
                   >
-                    <i className="fas fa-sign-in-alt" style={{ fontSize: '13px' }} />
+                    <i className="fas fa-sign-in-alt" style={{ fontSize: '13px', color: '#ffffff' }} />
                     Login
                   </Link>
                 )}

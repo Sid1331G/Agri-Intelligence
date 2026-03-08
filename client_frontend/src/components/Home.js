@@ -91,7 +91,7 @@ const Home = () => {
                             ].map((st, i) => (
                                 <div key={i} style={s.videoStat}>
                                     <div style={s.videoStatIcon}>
-                                        <i className={`fas ${st.icon}`} style={{ fontSize: '12px', color: '#34d399' }} />
+                                        <i className={`fas ${st.icon}`} style={{ fontSize: '12px', color: '#ffffff' }} />
                                     </div>
                                     <div>
                                         <div style={s.videoStatVal}>{st.val}</div>
@@ -287,7 +287,7 @@ const s = {
         fontFamily: "'Syne', sans-serif",
         fontSize: '26px',
         fontWeight: '800',
-        color: '#12d865',
+        color: 'rgb(52, 211, 153)',
         lineHeight: 1,
         marginBottom: '5px',
     },
@@ -308,9 +308,8 @@ const s = {
         background: '#11131200 50%',
         borderRadius: '20px',
     },
-    videoCard: {
-        background: '#0a1f18',
-        border: '1px solid rgba(52,211,153,0.15)',
+    videoCard: {       
+        border: '1px solid rgb(0 255 162 / 83%)',
         borderRadius: '20px',
         overflow: 'hidden',
         display: 'flex',
@@ -406,7 +405,7 @@ const s = {
         fontWeight: '700',
         letterSpacing: '0.8px',
         textTransform: 'uppercase',
-        color: '#4d7a65',
+        color: '#aa9d9d',
     },
 
     /* Feature cover section */

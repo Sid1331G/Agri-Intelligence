@@ -520,7 +520,7 @@ a:hover {
 
 #account-dropdown,
 .account-menu>div[style] {
-    background: var(--bg-surface) !important;
+    background: rgb(19 105 77 / 59%) !important;
     border: 1px solid var(--border) !important;
     border-radius: var(--radius-md) !important;
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;

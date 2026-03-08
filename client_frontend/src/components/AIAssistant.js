@@ -363,7 +363,7 @@ const AIAssistant = () => {
 
     const role         = profile?.role || 'farmer';
     const isFarmer     = role === 'farmer';
-    const accent       = isFarmer ? '#34d399' : '#38bdf8';
+    const accent       = isFarmer ? '#ceffebad' : '#ffffff';
     const accentSolid  = isFarmer ? '#1db87a' : '#0ea5e9';
     const accentDim    = isFarmer ? 'rgba(52,211,153,0.1)'  : 'rgba(56,189,248,0.1)';
     const accentBorder = isFarmer ? 'rgba(52,211,153,0.25)' : 'rgba(56,189,248,0.25)';
@@ -418,10 +418,10 @@ const AIAssistant = () => {
                     <div className="profile-details-block" style={s.profileDetails}>
                         {isFarmer && profile?.profile && (<>
 
-                                   <Detail icon={<MapPin size={18} />} label="District" value={profile.profile.district} />
-                                   <Detail icon={<Maximize size={18} />} label="Land"     value={profile.profile.land_size_acres ? `${profile.profile.land_size_acres} Acres` : null} />
-                                   <Detail icon={<Sprout size={18} />}   label="Farming"  value={profile.profile.farming_type} />
-                                   <Detail icon={<Droplets size={18} />} label="Irrigation" value={profile.profile.irrigation_method} />
+                                   <Detail icon={<MapPin size={18} />} label={<span style={{color:"#fff"}}>District</span>} value={profile.profile.district} />
+                                   <Detail icon={<Maximize size={18} />} label={<span style={{color:"#fff"}}>Land</span>}     value={profile.profile.land_size_acres ? `${profile.profile.land_size_acres} Acres` : null} />
+                                   <Detail icon={<Sprout size={18} />}   label={<span style={{color:"#fff"}}>Farming</span>}  value={profile.profile.farming_type} />
+                                   <Detail icon={<Droplets size={18} />} label={<span style={{color:"#fff"}}>Irrigation</span>} value={profile.profile.irrigation_method} />
                             <div>
                                 <div style={s.tagLabel}>🌾 Crops</div>
                                 <div style={s.tagGrid}>
@@ -581,7 +581,6 @@ const s = {
         boxSizing: 'border-box',
         fontFamily: "'DM Sans', sans-serif",
         overflow: 'hidden',
-        background: 'linear-gradient(160deg, #061510 0%, #081c14 100%)',
     },
     centerPage: {
         display: 'flex', flexDirection: 'column',
@@ -611,7 +610,6 @@ const s = {
         marginBottom: '4px',
     },
     profileName: {
-        fontFamily: "'Syne', sans-serif",
         fontSize: '17px', fontWeight: '800',
         margin: 0, letterSpacing: '-0.2px',
     },
@@ -627,7 +625,7 @@ const s = {
         width: '100%', display: 'flex', flexDirection: 'column', gap: '12px',
     },
     tagLabel: {
-        fontSize: '10px', color: '#2d5c47', fontWeight: '700',
+        fontSize: '10px', color: '#c8d6cf', fontWeight: '700',
         textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '6px',
     },
     tagGrid: { display: 'flex', flexWrap: 'wrap', gap: '5px' },
@@ -642,7 +640,7 @@ const s = {
         display: 'flex', flexDirection: 'column', gap: '8px', flexShrink: 0,
     },
     langLabel: {
-        fontSize: '12px', fontWeight: '700', color: '#4d7a65', letterSpacing: '0.3px',
+        fontSize: '12px', fontWeight: '700', color: '#c8d6cf', letterSpacing: '0.3px',
     },
     langSelect: {
         width: '100%', padding: '8px 10px', borderRadius: '8px',
@@ -702,7 +700,7 @@ const s = {
         padding: '10px 20px 12px', flexShrink: 0, background: '#061510',
     },
     suggestionsLabel: {
-        fontSize: '11px', color: '#2d5c47', fontWeight: '700',
+        fontSize: '11px', color: '#c8d6cf', fontWeight: '700',
         margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.8px',
     },
     suggestionsRow: { display: 'flex', flexWrap: 'wrap', gap: '7px' },

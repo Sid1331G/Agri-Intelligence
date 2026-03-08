@@ -16,4 +16,3 @@ Pillow
 google-genai
 python-dotenv
 beautifulsoup4
-lucide-react
