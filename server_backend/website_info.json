@@ -1,7 +1,7 @@
 {
-    "app_name": "PANDAM VILAI",
-    "tagline": "Agricultural Price Intelligence Platform for Tamil Nadu",
-    "description": "PANDAM VILAI is a smart agricultural web platform designed for farmers and commodity dealers in Tamil Nadu. It provides real-time vegetable and pulse price predictions, plant disease detection using AI, and a personalized AI assistant to help with farming and market decisions.",
+    "app_name": "Agri Intelligence",
+    "tagline": "AI-Powered Agricultural Price Intelligence Platform for Tamil Nadu",
+    "description": "Agri Intelligence is a smart agricultural web platform designed for farmers and commodity dealers in Tamil Nadu. It provides real-time vegetable and pulse price predictions, plant disease detection using AI, and a personalized AI assistant to help with farming and market decisions.",
     "target_users": [
         "Farmers",
         "Commodity Dealers",
@@ -15,7 +15,7 @@
         "home": {
             "route": "/",
             "title": "Home",
-            "description": "The landing page that introduces PANDAM VILAI. It shows an overview of all features available on the platform.",
+            "description": "The landing page that introduces Agri Intelligence. It shows an overview of all features available on the platform.",
             "access": "Public (no login required)"
         },
         "prediction": {

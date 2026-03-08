@@ -1,6 +1,6 @@
-# PANDAM VILAI - AI-Driven Decision Support System for Farmers
+# Agri Intelligence - AI-Powered Agricultural Intelligence - AI-Driven Decision Support System for Farmers and Agricultural Dealers
 
-**PANDAM VILAI** (Tamil for "Produce Price") is a comprehensive, AI-powered platform designed to empower farmers and agricultural dealers with data-driven insights. By combining machine learning, computer vision, and large language models, the system helps users navigate market complexities, identify plant diseases, and optimize their agricultural operations.
+**Agri Intelligence** is a comprehensive, AI-powered platform designed to empower farmers and agricultural dealers with data-driven insights. By combining machine learning, computer vision, and large language models, the system helps users navigate market complexities, identify plant diseases, and optimize their agricultural operations.
 
 ---
 

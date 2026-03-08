@@ -154,7 +154,7 @@ function App() {
             <i className="fas fa-robot"></i> AI Assistant
           </NavLink>
 
-          {/*<h2 style={{ margin: 0, textAlign: 'center', flexGrow: 1, color: 'white' }}>PANDAM VILAI</h2>*/}
+          {/*<h2 style={{ margin: 0, textAlign: 'center', flexGrow: 1, color: 'white' }}>Agri Intelligence</h2>*/}
 
           {/* ACCOUNT MENU */}
           <div className="account-menu" style={{ marginLeft: 'auto', position: 'relative' }}>

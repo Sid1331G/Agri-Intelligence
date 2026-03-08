@@ -18,4 +18,4 @@ services:
 
 # networks:
 #   default:
-#     name: pandam-vilai-network
+#     name: agri-intelligence-network
