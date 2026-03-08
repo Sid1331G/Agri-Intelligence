@@ -225,7 +225,7 @@ const Login = ({ setUser }) => {
                 <p className="login-switch-text" style={s.switchText}>
                     {isLogin ? "Don't have an account? " : "Already have an account? "}
                     <span onClick={() => switchMode(!isLogin)} style={s.switchLink}>
-                        {isLogin ? 'Sign up free' : 'Login here'}
+                        {isLogin ? 'Sign up ' : 'Login here'}
                     </span>
                 </p>
             </div>
