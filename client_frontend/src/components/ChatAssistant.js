@@ -187,7 +187,7 @@ const ChatAssistant = () => {
                                 flexShrink: 0, fontSize: '13px',
                             }}>
                                 <img
-                                    src="/static/content/ai_logo.jpg"
+                                    src="/static/content/logo.png"
                                     alt="AI"
                                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                     onError={e => { e.target.style.display = 'none'; e.target.parentNode.innerHTML = '🌱'; }}
@@ -236,12 +236,12 @@ const ChatAssistant = () => {
                         <button onClick={() => setIsOpen(false)} style={{
                             background: 'rgba(255,255,255,0.05)',
                             border: '1px solid rgba(255,255,255,0.1)',
-                            color: '#8fbfaa', cursor: 'pointer',
+                            color: '#ffffff', cursor: 'pointer',
                             width: '28px', height: '28px',
                             borderRadius: '50%',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: '18px', lineHeight: 1, flexShrink: 0,
-                        }}>×</button>
+                        }}>x</button>
                     </div>
 
                     {/* ── Messages ── */}
@@ -425,10 +425,10 @@ const ChatAssistant = () => {
                 }}
             >
                 {isOpen ? (
-                    <span style={{ color: '#34d399', fontSize: '22px', lineHeight: 1 }}>×</span>
+                    <span style={{ color: '#ffffff', fontSize: '22px', lineHeight: 1 }}>×</span>
                 ) : (
                     <img
-                        src="/static/content/ai_logo.jpg"
+                        src="/static/content/logo.png"
                         alt="AI"
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         onError={e => { e.target.style.display = 'none'; e.target.parentNode.innerHTML = '<span style="font-size:20px">💬</span>'; }}
