@@ -10,10 +10,7 @@ services:
       - key: PORT
         value: 5000
       - key: ALLOWED_ORIGINS
-        fromService:
-          name: agri-frontend
-          type: web
-          property: url
+        value: "https://agri-frontend.onrender.com"
 
   # Frontend Service
   - type: web
@@ -24,7 +21,4 @@ services:
     plan: free
     envVars:
       - key: VITE_API_URL
-        fromService:
-          name: agri-backend
-          type: web
-          property: url
+        value: "https://agri-backend.onrender.com"
