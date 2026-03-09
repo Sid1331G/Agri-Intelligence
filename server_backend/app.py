@@ -28,6 +28,7 @@ load_dotenv()
 # Flask Setup
 app = Flask(__name__, static_folder='static')
 allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:8080").split(",")
+print("Allowed origins:", allowed_origins)
 CORS(app, supports_credentials=True, origins=allowed_origins)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
@@ -288,10 +289,6 @@ VALID_COMMODITIES = {
     'Black Gram (Urd Beans)(Whole)', 'Black Gram Dal (Urd Dal)', 'Green Gram (Moong)(Whole)',
     'Green Gram Dal (Moong Dal)', 'Kabuli Chana (Chickpeas-White)', 'Kulthi (Horse Gram)', 'Moath Dal'
 }
-
-@app.route('/')
-def index():
-    return send_from_directory('static', 'index.html')
 
 from daily_prediction import generate_daily_predictions
 
