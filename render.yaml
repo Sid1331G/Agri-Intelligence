@@ -4,7 +4,7 @@ services:
     name: agri-backend
     runtime: docker
     dockerContext: ./server_backend
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: server_backend/Dockerfile
     plan: free
     envVars:
       - key: PORT
@@ -17,7 +17,7 @@ services:
     name: agri-frontend
     runtime: docker
     dockerContext: ./client_frontend
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: client_frontend/Dockerfile
     plan: free
     envVars:
       - key: VITE_API_URL
