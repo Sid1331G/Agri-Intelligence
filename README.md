@@ -47,7 +47,31 @@
 
 ### **DevOps & Infrastructure**
 - **Containerization**: Docker, Docker Compose
-- **Web Server**: Gunicorn
+- **Web Server**: Gunicorn, Nginx (Frontend)
+- **Deployment**: Render (Auto-deploys via `render.yaml`)
+
+---
+
+## 🚀 Deployment to Render
+
+This project is configured for easy deployment on **Render** using the provided `render.yaml` Blueprint.
+
+### Prerequisites
+1. A [Render](https://render.com/) account.
+2. Your fork of this repository connected to Render.
+
+### Steps to Deploy
+1. In the Render Dashboard, click **New +** and select **Blueprint**.
+2. Connect your GitHub repository.
+3. Render will automatically detect `render.yaml` and suggest creating two services:
+   - `agri-backend` (Web Service, Runtime: Docker)
+   - `agri-frontend` (Web Service, Runtime: Docker)
+4. **Environment Variables**: Render will prompt you for the required environment variables defined in the Blueprint. Ensure you provide:
+   - `MONGODB_CONNECTION_STRING`
+   - `GEMINI_API_KEY`
+   - `HF_TOKEN`
+   - `FLASK_SECRET_KEY`
+5. Click **Apply** to start the deployment.
 
 ---
 
@@ -63,8 +87,8 @@ The easiest way to get the system running is using Docker Compose:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/Bharath05022005/AI-Driven-Decision-Support-System-for-Farmers.git
-   cd AI-Driven-Decision-Support-System-for-Farmers
+   git clone https://github.com/Aravind22s/Agri-Intelligence.git
+   cd Agri-Intelligence
    ```
 
 2. **Configure Environment Variables**:

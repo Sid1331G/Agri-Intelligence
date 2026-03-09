@@ -2,7 +2,7 @@ services:
   backend:
     build: ./server_backend
     ports:
-      - "5000:5000"
+      - "10000:10000"
     env_file:
       - ./server_backend/.env
     # Add dependency on a local mongodb if needed, otherwise uses the one in .env

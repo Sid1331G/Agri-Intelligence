@@ -8,9 +8,9 @@ services:
     plan: free
     envVars:
       - key: PORT
-        value: 5000
+        value: 10000
       - key: ALLOWED_ORIGINS
-        value: "https://agri-frontend.onrender.com"
+        value: "https://agri-frontend-uwdc.onrender.com"
 
   # Frontend Service
   - type: web
@@ -21,4 +21,4 @@ services:
     plan: free
     envVars:
       - key: VITE_API_URL
-        value: "https://agri-backend.onrender.com"
+        value: "https://agri-backend-qyjz.onrender.com"
