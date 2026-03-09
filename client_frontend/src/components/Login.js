@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_BASE_URL from '../apiConfig';
 import { useNavigate } from 'react-router-dom';
 
 /* ── Inject mobile styles once ── */
@@ -119,7 +120,7 @@ const Login = ({ setUser }) => {
         setStatusMsg({ text: '', type: '' });
         const endpoint = isLogin ? '/login' : '/signup';
         try {
-            await axios.post(`http://127.0.0.1:5000${endpoint}`, {
+            await axios.post(`${API_BASE_URL}${endpoint}`, {
                 username,
                 password,
                 ...(!isLogin && { email })
@@ -129,7 +130,7 @@ const Login = ({ setUser }) => {
                 await setUser(username);
                 navigate('/');
             } else {
-                await axios.post('http://127.0.0.1:5000/login', { username, password }, { withCredentials: true });
+                await axios.post(`${API_BASE_URL}/login`, { username, password }, { withCredentials: true });
                 localStorage.setItem('user', username);
                 localStorage.setItem('profileComplete', 'false');
                 window.location.href = '/profile-setup';

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_BASE_URL from '../apiConfig';
 
-const FARMING_TYPES    = ['Organic', 'Conventional', 'Mixed'];
+const FARMING_TYPES = ['Organic', 'Conventional', 'Mixed'];
 const IRRIGATION_TYPES = ['Rain-fed', 'Borewell', 'Canal', 'Drip'];
-const BUSINESS_TYPES   = ['Wholesale', 'Retail', 'Broker'];
-const TRADING_VOLUMES  = ['Small', 'Medium', 'Large'];
+const BUSINESS_TYPES = ['Wholesale', 'Retail', 'Broker'];
+const TRADING_VOLUMES = ['Small', 'Medium', 'Large'];
 
 /* ── Inject mobile styles once ── */
 const injectStyles = () => {
@@ -115,37 +116,37 @@ const injectStyles = () => {
 };
 
 const ProfileSetup = ({ role, username, onComplete, isEditMode = false }) => {
-    const [meta, setMeta]               = useState({ districts: [], markets: [], commodities: [] });
-    const [loading, setLoading]         = useState(true);
-    const [saving, setSaving]           = useState(false);
-    const [error, setError]             = useState('');
+    const [meta, setMeta] = useState({ districts: [], markets: [], commodities: [] });
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState('');
     const [currentRole, setCurrentRole] = useState(role);
 
     // Farmer
-    const [district, setDistrict]           = useState('');
-    const [landSize, setLandSize]           = useState('');
+    const [district, setDistrict] = useState('');
+    const [landSize, setLandSize] = useState('');
     const [selectedCrops, setSelectedCrops] = useState([]);
-    const [farmingType, setFarmingType]     = useState('');
-    const [irrigation, setIrrigation]       = useState('');
+    const [farmingType, setFarmingType] = useState('');
+    const [irrigation, setIrrigation] = useState('');
 
     // Dealer
-    const [businessType, setBusinessType]               = useState('');
-    const [marketLocation, setMarketLocation]           = useState('');
+    const [businessType, setBusinessType] = useState('');
+    const [marketLocation, setMarketLocation] = useState('');
     const [selectedCommodities, setSelectedCommodities] = useState([]);
-    const [tradingVolume, setTradingVolume]             = useState('');
+    const [tradingVolume, setTradingVolume] = useState('');
 
     useEffect(() => {
         injectStyles();
         const fetchMetaAndProfile = async () => {
             setLoading(true);
             try {
-                const metaRes = await axios.get('http://127.0.0.1:5000/profile/meta', { withCredentials: true });
+                const metaRes = await axios.get(`${API_BASE_URL}/profile/meta`, { withCredentials: true });
                 setMeta(metaRes.data);
 
                 if (isEditMode) {
                     const uname = username || localStorage.getItem('user') || '';
                     const profileRes = await axios.get(
-                        `http://127.0.0.1:5000/profile/get?username=${encodeURIComponent(uname)}`,
+                        `${API_BASE_URL}/profile/get?username=${encodeURIComponent(uname)}`,
                         { withCredentials: true }
                     );
                     const d = profileRes.data;
@@ -181,14 +182,14 @@ const ProfileSetup = ({ role, username, onComplete, isEditMode = false }) => {
         const activeRole = isEditMode ? currentRole : role;
         if (!district) { setError('Please select your district.'); return; }
         if (activeRole === 'farmer') {
-            if (!selectedCrops.length)  { setError('Please select at least one crop.'); return; }
-            if (!farmingType)           { setError('Please select your farming type.'); return; }
-            if (!irrigation)            { setError('Please select your irrigation source.'); return; }
+            if (!selectedCrops.length) { setError('Please select at least one crop.'); return; }
+            if (!farmingType) { setError('Please select your farming type.'); return; }
+            if (!irrigation) { setError('Please select your irrigation source.'); return; }
         } else {
-            if (!businessType)               { setError('Please select your business type.'); return; }
-            if (!marketLocation)             { setError('Please select your market location.'); return; }
+            if (!businessType) { setError('Please select your business type.'); return; }
+            if (!marketLocation) { setError('Please select your market location.'); return; }
             if (!selectedCommodities.length) { setError('Please select at least one commodity.'); return; }
-            if (!tradingVolume)              { setError('Please select your trading volume.'); return; }
+            if (!tradingVolume) { setError('Please select your trading volume.'); return; }
         }
 
         setSaving(true);
@@ -197,7 +198,7 @@ const ProfileSetup = ({ role, username, onComplete, isEditMode = false }) => {
                 ? { district, land_size_acres: landSize || null, crops: selectedCrops, farming_type: farmingType, irrigation }
                 : { district, business_type: businessType, market_location: marketLocation, commodities: selectedCommodities, trading_volume: tradingVolume };
 
-            await axios.post('http://127.0.0.1:5000/profile/setup',
+            await axios.post(`${API_BASE_URL}/profile/setup`,
                 { username, role: activeRole, profile: profileData },
                 { withCredentials: true }
             );
@@ -221,13 +222,13 @@ const ProfileSetup = ({ role, username, onComplete, isEditMode = false }) => {
         </div>
     );
 
-    const activeRole   = isEditMode ? currentRole : role;
-    const isFarmer     = activeRole === 'farmer';
-    const accent       = isFarmer ? '#34d399' : '#38bdf8';
-    const accentDim    = isFarmer ? 'rgba(52,211,153,0.12)' : 'rgba(56,189,248,0.1)';
-    const accentBorder = isFarmer ? 'rgba(52,211,153,0.3)'  : 'rgba(56,189,248,0.3)';
-    const accentSolid  = isFarmer ? '#1db87a'               : '#0ea5e9';
-    const isSel        = (item, list) => list.includes(item);
+    const activeRole = isEditMode ? currentRole : role;
+    const isFarmer = activeRole === 'farmer';
+    const accent = isFarmer ? '#34d399' : '#38bdf8';
+    const accentDim = isFarmer ? 'rgba(52,211,153,0.12)' : 'rgba(56,189,248,0.1)';
+    const accentBorder = isFarmer ? 'rgba(52,211,153,0.3)' : 'rgba(56,189,248,0.3)';
+    const accentSolid = isFarmer ? '#1db87a' : '#0ea5e9';
+    const isSel = (item, list) => list.includes(item);
 
     /* ── Shared element styles ── */
     const selectSt = {
@@ -304,204 +305,204 @@ const ProfileSetup = ({ role, username, onComplete, isEditMode = false }) => {
 
                 {/* Scrollable form body */}
                 <div style={s.scrollBody}>
-                <form onSubmit={handleSubmit} style={{ width: '100%'}}>
-                <div className="ps-card" style={s.card}>
+                    <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+                        <div className="ps-card" style={s.card}>
 
-                    {error && (
-                        <div style={s.errorBanner}>
-                            <i className="fas fa-exclamation-circle" style={{ marginRight: '8px', color: '#f87171' }} />
-                            {error}
-                        </div>
-                    )}
-
-                    {/* District */}
-                    <div style={s.fieldGroup}>
-                        <label className="ps-label" style={s.label}>
-                            <i className="fas fa-map-marker-alt" style={{ marginRight: '8px', color: accent }} />
-                            District <span style={s.required}>*</span>
-                        </label>
-                        <select
-                            className="ps-select"
-                            value={district}
-                            onChange={e => setDistrict(e.target.value)}
-                            style={{ ...selectSt, borderColor: district ? accentBorder : 'rgba(255,255,255,0.08)' }}
-                            required
-                        >
-                            <option value="">-- Select your district --</option>
-                            {meta.districts.map(d => <option key={d} value={d}>{d}</option>)}
-                        </select>
-                    </div>
-
-                    {/* ── FARMER FIELDS ── */}
-                    {isFarmer && (<>
-                        <div style={s.fieldGroup}>
-                            <label className="ps-label" style={s.label}>
-                                <i className="fas fa-ruler-combined" style={{ marginRight: '8px', color: accent }} />
-                                Land Size <span style={s.labelNote}>(optional)</span>
-                            </label>
-                            <div style={s.inputRow}>
-                                <input
-                                    className="ps-input"
-                                    type="number" min="0" step="0.1"
-                                    placeholder="e.g. 3.5"
-                                    value={landSize}
-                                    onChange={e => setLandSize(e.target.value)}
-                                    style={s.input}
-                                />
-                                <span className="ps-input-unit" style={s.inputUnit}>Acres</span>
-                            </div>
-                        </div>
-
-                        <div style={s.fieldGroup}>
-                            <label className="ps-label" style={s.label}>
-                                <i className="fas fa-seedling" style={{ marginRight: '8px', color: accent }} />
-                                Crops Grown <span style={s.required}>*</span>
-                                <span style={s.labelNote}> ({selectedCrops.length} selected)</span>
-                            </label>
-                            <div style={s.chipGrid}>
-                                {meta.commodities.map(crop => (
-                                    <button key={crop} type="button" className="ps-chip"
-                                        onClick={() => toggleItem(crop, selectedCrops, setSelectedCrops)}
-                                        style={chipSt(isSel(crop, selectedCrops))}>
-                                        {crop}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Two-column row — stacks on phone via .ps-field-row CSS */}
-                        <div className="ps-field-row" style={s.fieldRow}>
-                            <div style={{ ...s.fieldGroup, flex: 1 }}>
-                                <label className="ps-label" style={s.label}>
-                                    <i className="fas fa-leaf" style={{ marginRight: '8px', color: accent }} />
-                                    Farming Type <span style={s.required}>*</span>
-                                </label>
-                                <div style={s.radioGroup}>
-                                    {FARMING_TYPES.map(f => (
-                                        <label key={f} className="ps-radio-label" style={radioSt(farmingType === f)}>
-                                            <input type="radio" name="farmingType" value={f}
-                                                checked={farmingType === f} onChange={() => setFarmingType(f)}
-                                                style={{ display: 'none' }} />
-                                            <span style={dotSt(farmingType === f)} />
-                                            {f}
-                                        </label>
-                                    ))}
+                            {error && (
+                                <div style={s.errorBanner}>
+                                    <i className="fas fa-exclamation-circle" style={{ marginRight: '8px', color: '#f87171' }} />
+                                    {error}
                                 </div>
-                            </div>
+                            )}
 
-                            <div style={{ ...s.fieldGroup, flex: 1 }}>
+                            {/* District */}
+                            <div style={s.fieldGroup}>
                                 <label className="ps-label" style={s.label}>
-                                    <i className="fas fa-tint" style={{ marginRight: '8px', color: accent }} />
-                                    Irrigation Source <span style={s.required}>*</span>
+                                    <i className="fas fa-map-marker-alt" style={{ marginRight: '8px', color: accent }} />
+                                    District <span style={s.required}>*</span>
                                 </label>
-                                <div style={s.radioGroup}>
-                                    {IRRIGATION_TYPES.map(ir => (
-                                        <label key={ir} className="ps-radio-label" style={radioSt(irrigation === ir)}>
-                                            <input type="radio" name="irrigation" value={ir}
-                                                checked={irrigation === ir} onChange={() => setIrrigation(ir)}
-                                                style={{ display: 'none' }} />
-                                            <span style={dotSt(irrigation === ir)} />
-                                            {ir}
-                                        </label>
-                                    ))}
+                                <select
+                                    className="ps-select"
+                                    value={district}
+                                    onChange={e => setDistrict(e.target.value)}
+                                    style={{ ...selectSt, borderColor: district ? accentBorder : 'rgba(255,255,255,0.08)' }}
+                                    required
+                                >
+                                    <option value="">-- Select your district --</option>
+                                    {meta.districts.map(d => <option key={d} value={d}>{d}</option>)}
+                                </select>
+                            </div>
+
+                            {/* ── FARMER FIELDS ── */}
+                            {isFarmer && (<>
+                                <div style={s.fieldGroup}>
+                                    <label className="ps-label" style={s.label}>
+                                        <i className="fas fa-ruler-combined" style={{ marginRight: '8px', color: accent }} />
+                                        Land Size <span style={s.labelNote}>(optional)</span>
+                                    </label>
+                                    <div style={s.inputRow}>
+                                        <input
+                                            className="ps-input"
+                                            type="number" min="0" step="0.1"
+                                            placeholder="e.g. 3.5"
+                                            value={landSize}
+                                            onChange={e => setLandSize(e.target.value)}
+                                            style={s.input}
+                                        />
+                                        <span className="ps-input-unit" style={s.inputUnit}>Acres</span>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </>)}
 
-                    {/* ── DEALER FIELDS ── */}
-                    {!isFarmer && activeRole === 'dealer' && (<>
-                        {/* Two-column row — stacks on phone */}
-                        <div className="ps-field-row" style={s.fieldRow}>
-                            <div style={{ ...s.fieldGroup, flex: 1 }}>
-                                <label className="ps-label" style={s.label}>
-                                    <i className="fas fa-store" style={{ marginRight: '8px', color: accent }} />
-                                    Business Type <span style={s.required}>*</span>
-                                </label>
-                                <div style={s.radioGroup}>
-                                    {BUSINESS_TYPES.map(b => (
-                                        <label key={b} className="ps-radio-label" style={radioSt(businessType === b)}>
-                                            <input type="radio" name="businessType" value={b}
-                                                checked={businessType === b} onChange={() => setBusinessType(b)}
-                                                style={{ display: 'none' }} />
-                                            <span style={dotSt(businessType === b)} />
-                                            {b}
-                                        </label>
-                                    ))}
+                                <div style={s.fieldGroup}>
+                                    <label className="ps-label" style={s.label}>
+                                        <i className="fas fa-seedling" style={{ marginRight: '8px', color: accent }} />
+                                        Crops Grown <span style={s.required}>*</span>
+                                        <span style={s.labelNote}> ({selectedCrops.length} selected)</span>
+                                    </label>
+                                    <div style={s.chipGrid}>
+                                        {meta.commodities.map(crop => (
+                                            <button key={crop} type="button" className="ps-chip"
+                                                onClick={() => toggleItem(crop, selectedCrops, setSelectedCrops)}
+                                                style={chipSt(isSel(crop, selectedCrops))}>
+                                                {crop}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div style={{ ...s.fieldGroup, flex: 1 }}>
-                                <label className="ps-label" style={s.label}>
-                                    <i className="fas fa-chart-bar" style={{ marginRight: '8px', color: accent }} />
-                                    Trading Volume <span style={s.required}>*</span>
-                                </label>
-                                <div style={s.radioGroup}>
-                                    {TRADING_VOLUMES.map(v => (
-                                        <label key={v} className="ps-radio-label" style={radioSt(tradingVolume === v)}>
-                                            <input type="radio" name="tradingVolume" value={v}
-                                                checked={tradingVolume === v} onChange={() => setTradingVolume(v)}
-                                                style={{ display: 'none' }} />
-                                            <span style={dotSt(tradingVolume === v)} />
-                                            {v}
+                                {/* Two-column row — stacks on phone via .ps-field-row CSS */}
+                                <div className="ps-field-row" style={s.fieldRow}>
+                                    <div style={{ ...s.fieldGroup, flex: 1 }}>
+                                        <label className="ps-label" style={s.label}>
+                                            <i className="fas fa-leaf" style={{ marginRight: '8px', color: accent }} />
+                                            Farming Type <span style={s.required}>*</span>
                                         </label>
-                                    ))}
+                                        <div style={s.radioGroup}>
+                                            {FARMING_TYPES.map(f => (
+                                                <label key={f} className="ps-radio-label" style={radioSt(farmingType === f)}>
+                                                    <input type="radio" name="farmingType" value={f}
+                                                        checked={farmingType === f} onChange={() => setFarmingType(f)}
+                                                        style={{ display: 'none' }} />
+                                                    <span style={dotSt(farmingType === f)} />
+                                                    {f}
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div style={{ ...s.fieldGroup, flex: 1 }}>
+                                        <label className="ps-label" style={s.label}>
+                                            <i className="fas fa-tint" style={{ marginRight: '8px', color: accent }} />
+                                            Irrigation Source <span style={s.required}>*</span>
+                                        </label>
+                                        <div style={s.radioGroup}>
+                                            {IRRIGATION_TYPES.map(ir => (
+                                                <label key={ir} className="ps-radio-label" style={radioSt(irrigation === ir)}>
+                                                    <input type="radio" name="irrigation" value={ir}
+                                                        checked={irrigation === ir} onChange={() => setIrrigation(ir)}
+                                                        style={{ display: 'none' }} />
+                                                    <span style={dotSt(irrigation === ir)} />
+                                                    {ir}
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
+                            </>)}
 
-                        <div style={s.fieldGroup}>
-                            <label className="ps-label" style={s.label}>
-                                <i className="fas fa-warehouse" style={{ marginRight: '8px', color: accent }} />
-                                Market Location <span style={s.required}>*</span>
-                            </label>
-                            <select
-                                className="ps-select"
-                                value={marketLocation}
-                                onChange={e => setMarketLocation(e.target.value)}
-                                style={{ ...selectSt, borderColor: marketLocation ? accentBorder : 'rgba(255,255,255,0.08)' }}
-                                required
-                            >
-                                <option value="">-- Select your market --</option>
-                                {meta.markets.map(m => <option key={m} value={m}>{m}</option>)}
-                            </select>
-                        </div>
+                            {/* ── DEALER FIELDS ── */}
+                            {!isFarmer && activeRole === 'dealer' && (<>
+                                {/* Two-column row — stacks on phone */}
+                                <div className="ps-field-row" style={s.fieldRow}>
+                                    <div style={{ ...s.fieldGroup, flex: 1 }}>
+                                        <label className="ps-label" style={s.label}>
+                                            <i className="fas fa-store" style={{ marginRight: '8px', color: accent }} />
+                                            Business Type <span style={s.required}>*</span>
+                                        </label>
+                                        <div style={s.radioGroup}>
+                                            {BUSINESS_TYPES.map(b => (
+                                                <label key={b} className="ps-radio-label" style={radioSt(businessType === b)}>
+                                                    <input type="radio" name="businessType" value={b}
+                                                        checked={businessType === b} onChange={() => setBusinessType(b)}
+                                                        style={{ display: 'none' }} />
+                                                    <span style={dotSt(businessType === b)} />
+                                                    {b}
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
 
-                        <div style={s.fieldGroup}>
-                            <label className="ps-label" style={s.label}>
-                                <i className="fas fa-boxes" style={{ marginRight: '8px', color: accent }} />
-                                Commodities Traded <span style={s.required}>*</span>
-                                <span style={s.labelNote}> ({selectedCommodities.length} selected)</span>
-                            </label>
-                            <div style={s.chipGrid}>
-                                {meta.commodities.map(c => (
-                                    <button key={c} type="button" className="ps-chip"
-                                        onClick={() => toggleItem(c, selectedCommodities, setSelectedCommodities)}
-                                        style={chipSt(isSel(c, selectedCommodities))}>
-                                        {c}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </>)}
+                                    <div style={{ ...s.fieldGroup, flex: 1 }}>
+                                        <label className="ps-label" style={s.label}>
+                                            <i className="fas fa-chart-bar" style={{ marginRight: '8px', color: accent }} />
+                                            Trading Volume <span style={s.required}>*</span>
+                                        </label>
+                                        <div style={s.radioGroup}>
+                                            {TRADING_VOLUMES.map(v => (
+                                                <label key={v} className="ps-radio-label" style={radioSt(tradingVolume === v)}>
+                                                    <input type="radio" name="tradingVolume" value={v}
+                                                        checked={tradingVolume === v} onChange={() => setTradingVolume(v)}
+                                                        style={{ display: 'none' }} />
+                                                    <span style={dotSt(tradingVolume === v)} />
+                                                    {v}
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
 
-                    {/* Submit */}
-                    <button type="submit" className="ps-submit-btn" disabled={saving} style={{
-                        ...s.submitBtn,
-                        background: saving ? '#1a2e26' : accentSolid,
-                        boxShadow: saving ? 'none' : `0 6px 20px ${accentSolid}55`,
-                        opacity: saving ? 0.7 : 1,
-                        cursor: saving ? 'not-allowed' : 'pointer',
-                    }}>
-                        {saving ? (
-                            <span><span style={s.spinnerInline} /> Saving...</span>
-                        ) : (
-                            <span>{isEditMode ? '✅ Update Profile' : 'Complete Setup & Go to Dashboard →'}</span>
-                        )}
-                    </button>
-                </div>{/* ps-card */}
-            </form>
-            </div>{/* scrollBody */}
+                                <div style={s.fieldGroup}>
+                                    <label className="ps-label" style={s.label}>
+                                        <i className="fas fa-warehouse" style={{ marginRight: '8px', color: accent }} />
+                                        Market Location <span style={s.required}>*</span>
+                                    </label>
+                                    <select
+                                        className="ps-select"
+                                        value={marketLocation}
+                                        onChange={e => setMarketLocation(e.target.value)}
+                                        style={{ ...selectSt, borderColor: marketLocation ? accentBorder : 'rgba(255,255,255,0.08)' }}
+                                        required
+                                    >
+                                        <option value="">-- Select your market --</option>
+                                        {meta.markets.map(m => <option key={m} value={m}>{m}</option>)}
+                                    </select>
+                                </div>
+
+                                <div style={s.fieldGroup}>
+                                    <label className="ps-label" style={s.label}>
+                                        <i className="fas fa-boxes" style={{ marginRight: '8px', color: accent }} />
+                                        Commodities Traded <span style={s.required}>*</span>
+                                        <span style={s.labelNote}> ({selectedCommodities.length} selected)</span>
+                                    </label>
+                                    <div style={s.chipGrid}>
+                                        {meta.commodities.map(c => (
+                                            <button key={c} type="button" className="ps-chip"
+                                                onClick={() => toggleItem(c, selectedCommodities, setSelectedCommodities)}
+                                                style={chipSt(isSel(c, selectedCommodities))}>
+                                                {c}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </>)}
+
+                            {/* Submit */}
+                            <button type="submit" className="ps-submit-btn" disabled={saving} style={{
+                                ...s.submitBtn,
+                                background: saving ? '#1a2e26' : accentSolid,
+                                boxShadow: saving ? 'none' : `0 6px 20px ${accentSolid}55`,
+                                opacity: saving ? 0.7 : 1,
+                                cursor: saving ? 'not-allowed' : 'pointer',
+                            }}>
+                                {saving ? (
+                                    <span><span style={s.spinnerInline} /> Saving...</span>
+                                ) : (
+                                    <span>{isEditMode ? '✅ Update Profile' : 'Complete Setup & Go to Dashboard →'}</span>
+                                )}
+                            </button>
+                        </div>{/* ps-card */}
+                    </form>
+                </div>{/* scrollBody */}
             </div>{/* container */}
         </div>
     );

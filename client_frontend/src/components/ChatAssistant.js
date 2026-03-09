@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+import API_BASE_URL from '../apiConfig';
 import ReactMarkdown from 'react-markdown';
 
 const ChatAssistant = () => {
@@ -69,7 +70,7 @@ const ChatAssistant = () => {
         recognitionRef.current.lang = ({ English: 'en-US', Tamil: 'ta-IN' })[selectedLanguage] || 'en-US';
         recognitionRef.current.onresult = e => { setInput(e.results[0][0].transcript); setIsListening(false); };
         recognitionRef.current.onerror = () => setIsListening(false);
-        recognitionRef.current.onend   = () => setIsListening(false);
+        recognitionRef.current.onend = () => setIsListening(false);
     }, [selectedLanguage]);
 
     const toggleListening = () => {
@@ -91,7 +92,7 @@ const ChatAssistant = () => {
         setLoading(true);
         setShowChips(false);
         try {
-            const res = await axios.post('http://127.0.0.1:5000/api/chat', {
+            const res = await axios.post(`${API_BASE_URL}/api/chat`, {
                 message: messageWithLanguage,
                 history: chatHistory
             });
@@ -115,9 +116,9 @@ const ChatAssistant = () => {
     };
 
     /* ── Responsive values ── */
-    const fabSize   = isMobile ? '46px' : '54px';
+    const fabSize = isMobile ? '46px' : '54px';
     const fabBottom = isMobile ? '14px' : '20px';
-    const fabRight  = isMobile ? '14px' : '20px';
+    const fabRight = isMobile ? '14px' : '20px';
 
     /* Chat window sizing */
     const chatStyle = isMobile ? {
@@ -227,7 +228,7 @@ const ChatAssistant = () => {
                                     }}
                                 >
                                     <option value="English" style={{ background: '#0a1f18', color: '#e8f5f0' }}>English</option>
-                                    <option value="Tamil"   style={{ background: '#0a1f18', color: '#e8f5f0' }}>Tamil</option>
+                                    <option value="Tamil" style={{ background: '#0a1f18', color: '#e8f5f0' }}>Tamil</option>
                                 </select>
                             </div>
                         </div>
@@ -293,7 +294,7 @@ const ChatAssistant = () => {
                                     border: '1px solid rgba(52,211,153,0.1)',
                                     display: 'flex', gap: '4px', alignItems: 'center',
                                 }}>
-                                    {[0,1,2].map(i => (
+                                    {[0, 1, 2].map(i => (
                                         <span key={i} style={{
                                             width: '6px', height: '6px',
                                             borderRadius: '50%',

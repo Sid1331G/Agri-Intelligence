@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import API_BASE_URL from '../apiConfig';
 import ReactMarkdown from 'react-markdown';
 
 const DiseaseDetection = () => {
@@ -14,7 +15,7 @@ const DiseaseDetection = () => {
         setLoading(true);
         setResult(null);
         try {
-            const response = await axios.post('http://127.0.0.1:5000/api/detect_disease', formData);
+            const response = await axios.post(`${API_BASE_URL}/api/detect_disease`, formData);
             setResult(response.data);
         } catch (error) {
             console.error("Detection Error:", error);
@@ -33,7 +34,7 @@ const DiseaseDetection = () => {
             const content = lines.slice(1).join('\n').trim();
             let icon = "fa-info-circle";
             if (title.includes("Symptoms")) icon = "fa-eye";
-            if (title.includes("Causes"))   icon = "fa-question-circle";
+            if (title.includes("Causes")) icon = "fa-question-circle";
             if (title.includes("Treatment")) icon = "fa-flask";
             if (title.includes("Overview")) icon = "fa-book-open";
             return { title, content, icon };

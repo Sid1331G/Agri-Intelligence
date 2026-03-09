@@ -11,6 +11,7 @@ import ChatAssistant from './components/ChatAssistant';
 import AIAssistant from './components/AIAssistant';
 import RoleSelection from './components/RoleSelection';
 import ProfileSetup from './components/ProfileSetup';
+import API_BASE_URL from './apiConfig';
 
 // Inline message shown when unauthenticated user visits a protected page
 const LoginRequired = ({ pageName }) => (
@@ -90,7 +91,7 @@ function App() {
   const checkProfile = async (username) => {
     if (!username) return;
     try {
-      const res = await axios.get(`http://127.0.0.1:5000/profile/get?username=${encodeURIComponent(username)}`, { withCredentials: true });
+      const res = await axios.get(`${API_BASE_URL}/profile/get?username=${encodeURIComponent(username)}`, { withCredentials: true });
       const complete = res.data.profile_complete === true;
       setProfileComplete(complete);
       localStorage.setItem('profileComplete', complete ? 'true' : 'false');
@@ -122,7 +123,7 @@ function App() {
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://127.0.0.1:5000/api/logout');
+      await axios.post(`${API_BASE_URL}/api/logout`);
     } catch (error) {
       console.error("Logout warning:", error);
     }

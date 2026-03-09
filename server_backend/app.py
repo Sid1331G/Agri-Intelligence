@@ -26,8 +26,9 @@ warnings.filterwarnings("ignore", category=UserWarning)
 load_dotenv()
 
 # Flask Setup
-app = Flask(__name__, static_folder='static', )
-CORS(app, supports_credentials=True, origins=["http://localhost:5173", "http://localhost:8080"])
+app = Flask(__name__, static_folder='static')
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:8080").split(",")
+CORS(app, supports_credentials=True, origins=allowed_origins)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
 # MongoDB Setup

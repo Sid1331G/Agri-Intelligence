@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import API_BASE_URL from '../apiConfig';
 
 const PredictionComponent = () => {
     const [category, setCategory] = useState('');
@@ -28,7 +29,7 @@ const PredictionComponent = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch('http://localhost:5000/predict', {
+            const response = await fetch(`${API_BASE_URL}/predict`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ category, variety }),

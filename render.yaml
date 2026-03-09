@@ -1,0 +1,32 @@
+services:
+  # Backend Service
+  - type: web
+    name: agri-backend
+    runtime: docker
+    dockerContext: ./server_backend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: FLASK_SECRET_KEY
+        fromContext: secret
+      - key: GEMINI_API_KEY
+        fromContext: secret
+      - key: MONGODB_CONNECTION_STRING
+        fromContext: secret
+      - key: HF_TOKEN
+        fromContext: secret
+      - key: ALLOWED_ORIGINS
+        value: "https://agri-frontend.onrender.com" # Update this after frontend is deployed or use * for testing
+
+  # Frontend Service
+  - type: web
+    name: agri-frontend
+    runtime: docker
+    dockerContext: ./client_frontend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: VITE_API_URL
+        value: "https://agri-backend.onrender.com" # Point to the backend service URL

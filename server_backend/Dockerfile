@@ -23,8 +23,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code
 COPY . .
 
-# Expose the port the app runs on
+# Expose the port (Render will override this, but good for documentation)
 EXPOSE 5000
 
-# Command to run the application
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
+# Command to run the application using the PORT environment variable
+CMD ["sh", "-c", "gunicorn -b 0.0.0.0:${PORT:-5000} app:app"]
