@@ -187,7 +187,7 @@ const ChatAssistant = () => {
                                 flexShrink: 0, fontSize: '13px',
                             }}>
                                 <img
-                                    src="/static/content/logo.png"
+                                    src="/static/logo.jpeg"
                                     alt="AI"
                                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                     onError={e => { e.target.style.display = 'none'; e.target.parentNode.innerHTML = '🌱'; }}
@@ -428,7 +428,7 @@ const ChatAssistant = () => {
                     <span style={{ color: '#ffffff', fontSize: '22px', lineHeight: 1 }}>×</span>
                 ) : (
                     <img
-                        src="/static/content/logo.png"
+                        src="/static/logo.jpeg"
                         alt="AI"
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         onError={e => { e.target.style.display = 'none'; e.target.parentNode.innerHTML = '<span style="font-size:20px">💬</span>'; }}
