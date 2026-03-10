@@ -67,7 +67,7 @@ const Home = () => {
                                 muted
                                 loop
                                 playsInline
-                                poster="/static/content/video_poster.jpg"
+                                /*poster="/static/content/video_poster.jpg"*/
                             >
                                 <source src="/static/content/agri_intro.mp4" type="video/mp4" />
                             </video>
