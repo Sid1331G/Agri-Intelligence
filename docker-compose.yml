@@ -1,6 +1,6 @@
 services:
   backend:
-    build: ./server_backend/Dockerfile
+    build: ./server_backend
     ports:
       - "5000:5000"
     env_file:
@@ -10,7 +10,7 @@ services:
     #   - mongodb
 
   frontend:
-    build: ./client_frontend/Dockerfile
+    build: ./client_frontend
     ports:
       - "8080:80"
     depends_on:
