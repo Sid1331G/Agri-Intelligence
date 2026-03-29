@@ -37,12 +37,6 @@ CORS(app,
 
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
-app.config.update(
-    SESSION_COOKIE_SAMESITE="None",
-    SESSION_COOKIE_SECURE=True,
-    SESSION_COOKIE_HTTPONLY=True,
-)
-
 # MongoDB Setup
 try:
     client = MongoClient(
