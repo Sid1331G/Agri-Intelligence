@@ -27,15 +27,13 @@ load_dotenv()
 
 # Flask Setup
 app = Flask(__name__, static_folder='static')
-# Strip whitespace AND trailing slashes from each origin — Flask-CORS does exact
-# matching, so 'https://foo.vercel.app/' != 'https://foo.vercel.app'.
-allowed_origins = [
-    o.strip().rstrip("/")
-    for o in os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:8080").split(",")
-    if o.strip()
-]
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:8080").split(",")
 print("Allowed origins:", allowed_origins)
-CORS(app, supports_credentials=True, origins=allowed_origins)
+CORS(app, 
+     supports_credentials=True, 
+     origins=allowed_origins,
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "OPTIONS"])
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
 # MongoDB Setup
