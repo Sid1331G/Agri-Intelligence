@@ -5,18 +5,19 @@ services:
     runtime: docker
     dockerContext: ./server_backend
     dockerfilePath: server_backend/Dockerfile
-    plan: free
+    plan: standard          # FIX 1: Free = 512 MB, torch+transformers needs ~2 GB
     envVars:
       - key: ALLOWED_ORIGINS
-        value: "https://agri-frontend-uwdc.onrender.com"
-
-  # Frontend Service
-  - type: web
-    name: agri-frontend
-    runtime: docker
-    dockerContext: ./client_frontend
-    dockerfilePath: client_frontend/Dockerfile
-    plan: free
-    envVars:
-      - key: VITE_API_URL
-        value: "https://agri-backend-qyjz.onrender.com"
+        value: "https://agri-intelligence-eight.vercel.app"   # FIX 2: Your actual Vercel URL
+      - key: GEMINI_API_KEY
+        sync: false         # Will be set manually in Render dashboard (secret)
+      - key: MONGODB_CONNECTION_STRING
+        sync: false         # Set in Render dashboard
+      - key: FLASK_SECRET_KEY
+        sync: false         # Set in Render dashboard
+      - key: HF_TOKEN
+        sync: false         # Optional: only if your HF model is private
+    disk:
+      name: model-cache
+      mountPath: /app/model_cache   # FIX 3: Persistent disk so model isn't re-downloaded on every restart
+      sizeGB: 2

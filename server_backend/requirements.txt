@@ -1,3 +1,12 @@
+# FIX: Use torch CPU-only — saves ~600 MB RAM vs default torch (which bundles CUDA)
+# The --index-url line tells pip to get torch from PyTorch's CPU-only registry
+--index-url https://download.pytorch.org/whl/cpu
+torch==2.1.2+cpu
+torchvision==0.16.2+cpu
+
+# Reset to default PyPI for everything else
+--index-url https://pypi.org/simple
+
 Flask
 flask-cors
 pymongo
@@ -8,8 +17,6 @@ numpy
 scikit-learn
 xgboost
 requests
-torch
-torchvision
 transformers
 huggingface_hub
 Pillow

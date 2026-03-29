@@ -34,7 +34,14 @@ CORS(app,
      origins=allowed_origins,
      allow_headers=["Content-Type", "Authorization"],
      methods=["GET", "POST", "OPTIONS"])
+
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
+
+app.config.update(
+    SESSION_COOKIE_SAMESITE="None",
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_HTTPONLY=True,
+)
 
 # MongoDB Setup
 try:
@@ -345,6 +352,11 @@ def predict_commodity(commodity):
 MODEL_NAME = "linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification"
 BASE_PROCESSOR = "google/mobilenet_v2_1.0_224"
 
+MODEL_CACHE_DIR = os.getenv("MODEL_CACHE_DIR", "/app/model_cache")
+os.makedirs(MODEL_CACHE_DIR, exist_ok=True)
+os.environ["TRANSFORMERS_CACHE"] = MODEL_CACHE_DIR
+os.environ["HF_HOME"] = MODEL_CACHE_DIR
+
 processor = None
 disease_model = None
 _disease_model_loaded = False
@@ -362,11 +374,13 @@ def load_disease_model():
 
         processor = AutoImageProcessor.from_pretrained(
             BASE_PROCESSOR,
-            use_fast=True
+            use_fast=True,
+            cache_dir=MODEL_CACHE_DIR,
         )
 
         disease_model = AutoModelForImageClassification.from_pretrained(
-            MODEL_NAME
+            MODEL_NAME,
+            cache_dir=MODEL_CACHE_DIR,
         )
 
         disease_model.eval()
