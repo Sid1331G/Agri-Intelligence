@@ -27,9 +27,13 @@ load_dotenv()
 
 # Flask Setup
 app = Flask(__name__, static_folder='static')
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:8080").split(",")
+allowed_origins = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:8080").split(",")]
 print("Allowed origins:", allowed_origins)
-CORS(app, supports_credentials=True, origins=allowed_origins)
+CORS(app, 
+     supports_credentials=True, 
+     origins=allowed_origins,
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "OPTIONS"])
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
 # MongoDB Setup
