@@ -27,7 +27,13 @@ load_dotenv()
 
 # Flask Setup
 app = Flask(__name__, static_folder='static')
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:8080").split(",")
+# Strip whitespace AND trailing slashes from each origin — Flask-CORS does exact
+# matching, so 'https://foo.vercel.app/' != 'https://foo.vercel.app'.
+allowed_origins = [
+    o.strip().rstrip("/")
+    for o in os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:8080").split(",")
+    if o.strip()
+]
 print("Allowed origins:", allowed_origins)
 CORS(app, supports_credentials=True, origins=allowed_origins)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
@@ -332,15 +338,25 @@ def predict_commodity(commodity):
         return jsonify({"error": str(e)}), 500
 
 # Plant Disease Detection Setup
-    
+# ⚠️  Do NOT load the model at import / startup time.
+# PyTorch + HuggingFace together require ~1.5 GB RAM.
+# Render free tier only provides 512 MB — loading globally kills the
+# gunicorn worker before the first request is ever served.
+# The model is loaded lazily on the first /api/detect_disease request.
+
 MODEL_NAME = "linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification"
 BASE_PROCESSOR = "google/mobilenet_v2_1.0_224"
 
 processor = None
 disease_model = None
+_disease_model_loaded = False
 
 def load_disease_model():
-    global processor, disease_model
+    """Lazy loader — called on first /api/detect_disease request only."""
+    global processor, disease_model, _disease_model_loaded
+    if _disease_model_loaded:
+        return
+    _disease_model_loaded = True
     try:
         hf_token = os.getenv("HF_TOKEN")
         if hf_token:
@@ -348,7 +364,7 @@ def load_disease_model():
 
         processor = AutoImageProcessor.from_pretrained(
             BASE_PROCESSOR,
-            use_fast=True  # use False only if reproducibility matters
+            use_fast=True
         )
 
         disease_model = AutoModelForImageClassification.from_pretrained(
@@ -360,8 +376,6 @@ def load_disease_model():
 
     except Exception as e:
         print(f"❌ Disease Model Load Error: {e}")
-
-load_disease_model()
 
 def predict_disease(image_bytes):
     if processor is None or disease_model is None:
@@ -420,6 +434,8 @@ STRICT: Keep every bullet under 30 words. Be direct.
 
 @app.route('/api/detect_disease', methods=['POST'])
 def detect_disease():
+    # Lazy-load the model on first call (avoids startup OOM on Render free tier)
+    load_disease_model()
 
     if not disease_model:
         return jsonify({"error": "Disease model not loaded"}), 500

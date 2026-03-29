@@ -2,11 +2,33 @@ import pickle
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
-from scraper import get_live_tn_prices
 
-# We fetch the live prices ONCE when the module loads
-print("✅ Fetching Live Prices for Baseline...")
-LIVE_PRICES_CACHE = get_live_tn_prices()
+# Lazy cache — fetched on first /predict call, NOT at import time.
+# Fetching at import time blocks the gunicorn worker startup on Render free tier
+# because the external HTTP request times out, killing the process before any
+# request can be served (all subsequent requests get a 502).
+_LIVE_PRICES_CACHE = None
+_PRICES_FETCHED = False
+
+def _get_live_prices_cached():
+    """Fetch live prices exactly once, with a safe fallback."""
+    global _LIVE_PRICES_CACHE, _PRICES_FETCHED
+    if _PRICES_FETCHED:
+        return _LIVE_PRICES_CACHE
+    _PRICES_FETCHED = True
+    try:
+        from scraper import get_live_tn_prices
+        prices = get_live_tn_prices()
+        if isinstance(prices, dict) and "error" not in prices:
+            _LIVE_PRICES_CACHE = prices
+            print("✅ Live prices fetched successfully")
+        else:
+            print(f"⚠️ Scraper returned error/empty, using fallback prices: {prices}")
+            _LIVE_PRICES_CACHE = {}
+    except Exception as e:
+        print(f"⚠️ Scraper failed, using fallback prices: {e}")
+        _LIVE_PRICES_CACHE = {}
+    return _LIVE_PRICES_CACHE
 
 # Load the models relative to this file
 import os
@@ -33,18 +55,19 @@ def generate_daily_predictions(commodity_name, num_days=7):
     predictions = []
     start_date = datetime.today()
 
-    # Get the REAL price today from the Scraper!
+    # Get the REAL price today from the Scraper (lazy-loaded, safe fallback).
     # The scraped price is per kg. The model predicts per Quintal (100kg).
     live_price_per_kg = None
-    if LIVE_PRICES_CACHE and not "error" in LIVE_PRICES_CACHE:
-        live_price_per_kg = LIVE_PRICES_CACHE.get(commodity_name)
-    
+    cached_prices = _get_live_prices_cached()
+    if cached_prices:
+        live_price_per_kg = cached_prices.get(commodity_name)
+
     # Fallback to standard 50rs if scraper fails or commodity not tracked
     if not live_price_per_kg:
         print(f"Warning: {commodity_name} not found in scraped live data. Using fallback 50rs.")
-        live_price_per_kg = 50 
-        
-    current_market_price_quintal = live_price_per_kg * 100 
+        live_price_per_kg = 50
+
+    current_market_price_quintal = live_price_per_kg * 100
 
     for i in range(num_days):
         future_date = start_date + timedelta(days=i)
