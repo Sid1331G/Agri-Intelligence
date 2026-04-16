@@ -169,3 +169,4 @@ If you prefer to run the components manually without Docker:
 This project was developed as a final year project. Contributions for improving model accuracy or UI/UX are welcome!
 
 
+"# Agri-Intelligence" 
